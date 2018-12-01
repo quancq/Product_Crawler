@@ -9,6 +9,7 @@
 from Product_Crawler import utils
 import os, math, re
 from scrapy.exceptions import DropItem
+import pandas as pd
 
 
 class SaveFilePipeline(object):
@@ -19,7 +20,7 @@ class SaveFilePipeline(object):
         self.base_dir = "./Data/Archive"
         self.data = {}
         self.export_format = utils.get_export_format_setting()
-        self.export_fields = utils.get_export_fields_setting()
+        # self.export_fields = utils.get_export_fields_setting()
 
     def open_spider(self, spider):
         self.data.update({spider.name: {}})
@@ -44,15 +45,54 @@ class SaveFilePipeline(object):
         for category, items in map_category_items.items():
             category_save_dir = os.path.join(self.base_dir, spider_name, category)
             utils.mkdirs(category_save_dir)
-            save_path = os.path.join(category_save_dir, "{}_{}_{}product.{}".format(
-                spider_name, self.time_now_str, len(items), self.export_format))
-            # Save items with format setting
-            self.save_data(items, save_path, spider.logger)
+            prefix_fname = "{}_{}".format(spider_name, self.time_now_str)
 
-    def save_data(self, items, save_path, logger):
+            # Save items with format setting
+            self.save_data(items, category_save_dir, prefix_fname, spider.logger)
+
+    def save_data(self, items, save_dir, prefix_fname, logger):
         if self.export_format == "json":
+            save_path = os.path.join(save_dir, "{}_{}items.json".format(
+                prefix_fname, len(items)))
             utils.save_json(items, save_path)
         else:
-            utils.save_csv(items, save_path, fields=self.export_fields)
+            items_df, ratings_df, reviews_df = [], [], []
+            for item in items:
+                items_df.append((item["domain"], item["url"], item["product_id"],
+                                 item["brand"], item["category"], item["model"],
+                                 item["price"], item["seller"], item["info"]))
 
-        logger.info("Save {} items to {} done".format(len(items), save_path))
+                ratings = item["ratings"]
+                ratings_df.append((item["domain"], item["url"], item["product_id"],
+                                   ratings.get(1, 0), ratings.get(2, 0),
+                                   ratings.get(3, 0), ratings.get(4, 0),
+                                   ratings.get(5, 0)))
+
+                reviews = item["reviews"]
+                for review in reviews:
+                    reviews_df.append((item["domain"], item["url"], item["product_id"],
+                                       review["time"], review["rating"], review["comment"]))
+
+            # Save items
+            columns = ["Domain", "Url", "Product_id", "Brand", "Category",
+                       "Model", "Price", "Seller", "Info"]
+            items_df = pd.DataFrame(items_df, columns=columns)
+            save_path = os.path.join(save_dir, "{}_{}items.csv".format(
+                prefix_fname, items_df.shape[0]))
+            utils.save_csv(items_df, save_path)
+
+            # Save ratings
+            columns = ["Domain", "Url", "Product_id", "1", "2", "3", "4", "5"]
+            ratings_df = pd.DataFrame(ratings_df, columns=columns)
+            save_path = os.path.join(save_dir, "{}_{}ratings.csv".format(
+                prefix_fname, ratings_df.shape[0]))
+            utils.save_csv(ratings_df, save_path)
+
+            # Save reviews
+            columns = ["Domain", "Url", "Product_id", "Time", "Rating", "Comment"]
+            reviews_df = pd.DataFrame(reviews_df, columns=columns)
+            save_path = os.path.join(save_dir, "{}_{}reviews.csv".format(
+                prefix_fname, reviews_df.shape[0]))
+            utils.save_csv(reviews_df, save_path)
+
+        logger.info("Save {} items to {} done".format(len(items), save_dir))

@@ -2,6 +2,7 @@ from Product_Crawler import utils
 from lxml import html
 import requests, os
 import pandas as pd
+import chardet
 
 
 def crawl_latest_proxies():
@@ -32,7 +33,7 @@ def get_proxy_urls(df):
     return proxies
 
 
-if __name__ == "__main__":
+def crawl():
     proxies = crawl_latest_proxies()
 
     proxy_dir = "./Proxy"
@@ -58,3 +59,11 @@ if __name__ == "__main__":
     print(proxies.head())
 
     # print("\n".join(proxy_urls[:10]))
+
+
+
+
+
+if __name__ == "__main__":
+    pass
+    # crawl()

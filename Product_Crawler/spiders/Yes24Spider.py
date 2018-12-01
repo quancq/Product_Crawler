@@ -3,6 +3,10 @@ from scrapy import Request
 from Product_Crawler.spiders.ProductSpider import ProductSpider
 from Product_Crawler.items import Product
 from Product_Crawler import utils
+from Product_Crawler.project_settings import DEFAULT_TIME_FORMAT
+from lxml import html
+import requests
+import math
 
 
 class Yes24Spider(ProductSpider):
@@ -11,7 +15,9 @@ class Yes24Spider(ProductSpider):
     base_url = "https://www.yes24.vn"
 
     url_category_list = [
-        ("https://www.yes24.vn/thuc-pham/thuc-pham-chuc-nang-c679630", "Thực phẩm chức năng"),
+        # ("https://www.yes24.vn/thuc-pham/thuc-pham-chuc-nang-c679630", "Thực phẩm chức năng"),
+        # ("https://www.yes24.vn/me-be", "Mẹ và bé"),
+        ("https://www.yes24.vn/gia-dung", "Gia dụng")
     ]
 
     def start_requests(self):
@@ -48,8 +54,10 @@ class Yes24Spider(ProductSpider):
     def parse_item(self, response):
         url = response.url
         intro_div = response.css("#tr-intro-productdt")
+        product_id = response.css("#productNo::attr(value)").extract_first()
         model = intro_div.css(".tr-prd-name2::text").extract_first().strip()
         brand = intro_div.css(".tr-thuonghieu-reg>a::text").extract_first().strip()
+        seller = intro_div.css(".tr-gn-supplier a::attr(href)").extract_first()
         category = response.meta["category"]
 
         # intro = intro_div.css(".tr-short-content::text").extract()
@@ -58,20 +66,78 @@ class Yes24Spider(ProductSpider):
 
         price = intro_div.css(".th-detail-price::text").extract_first().strip()
         info = response.css("#tr-detail-productdt .tr-prd-info-content ::text").extract()
-        text = " ".join([elm.strip() for elm in info])
+        info = " ".join([elm.strip() for elm in info])
+
+        # Calculate rating count
+        num_reviews = response.css("#tr-productdt-rank .vote-count::text").extract_first()
+        num_reviews = 0 if num_reviews is None else int(num_reviews)
+
+        ratings = response.css("#tr-productdt-rank "
+                               ".tr-rank-percent>div:nth-child(3)::text").extract()
+        ratings = [int(r[:-1]) for r in ratings]
+        ratings = {5-i: round(num_reviews * r / 100) for i, r in enumerate(ratings)}
+
+        # Crawl all reviews of product
+        num_page_reviews = int(math.ceil(num_reviews / 5))
+
+        reviews = self.crawl_review(url=None, raw_html=response.text)
+        for page in range(2, num_page_reviews + 1):
+            url = "https://www.yes24.vn/Product/" \
+                  "GetProductComment?productNo={}&page={}".format(product_id, page)
+            reviews.extend(self.crawl_review(url))
 
         self.item_scraped_count += 1
         if self.item_scraped_count % 100 == 0:
             self.logger.info("Spider {}: Crawl {} items".format(self.name, self.item_scraped_count))
 
         yield Product(
+            domain=self.allowed_domains[0],
+            product_id=product_id,
             url=url,
             brand=brand,
             category=category,
             model=model,
-            text=text,
-            price=price
+            info=info,
+            price=price,
+            seller=seller,
+            reviews=reviews,
+            ratings=ratings
         )
 
     def errback(self, failure):
         self.logger.error("Error when send requests : ", failure.request)
+
+    @staticmethod
+    def crawl_review(url, raw_html):
+        # url = "https://www.yes24.vn/Product/GetProductComment?productNo=1714033&page=17"
+        if url is None:
+            root = html.document_fromstring(raw_html)
+        else:
+            res = requests.get(url)
+            root = html.document_fromstring(res.content)
+
+        # print(html.tostring(root, pretty_print=True))
+
+        review_divs = root.cssselect("div.tr-comment-detail")
+
+        reviews = []
+        for review_div in review_divs:
+            spans = review_div.cssselect(".tr-cmtdt-star-date>span")
+            rating = len(spans[0].cssselect("span.tr-fa-yellow"))
+
+            time = spans[1].text
+            # convert time to setting format
+            time = utils.transform_time_fmt(
+                time,
+                src_fmt="%H:%M:%S, %d/%m/%Y",
+                dst_fmt=DEFAULT_TIME_FORMAT
+            )
+
+            comment = review_div.cssselect(".tr-cmdt-content-bottom")[0].text.strip()
+            # comment = comment.encode("latin-1").decode("utf-8")
+            reviews.append(dict(rating=rating, time=time, comment=comment))
+
+        # for review in reviews:
+        #     print("Time : {} - Star : {} - Comment : {}".format(
+        #         review["time"], review["rating"], review["comment"]))
+        return reviews

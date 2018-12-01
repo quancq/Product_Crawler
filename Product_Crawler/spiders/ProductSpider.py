@@ -14,7 +14,7 @@ class ProductSpider(scrapy.Spider):
     def parse_category(self, response):
         raise NotImplementedError()
 
-    def parse_article(self, response):
+    def parse_item(self, response):
         raise NotImplementedError()
 
     # def transform_time_fmt(self, time_str, src_fmt):

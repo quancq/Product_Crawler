@@ -7,16 +7,23 @@ from Product_Crawler.project_settings import DEFAULT_TIME_FORMAT
 
 
 def get_time_str(time=datetime.now(), fmt=DEFAULT_TIME_FORMAT):
-    return time.strftime(fmt)
+    try:
+        return time.strftime(fmt)
+    except:
+        return ""
 
 
 def get_time_obj(time_str, fmt=DEFAULT_TIME_FORMAT):
-    return datetime.strptime(time_str, fmt)
+    try:
+        return datetime.strptime(time_str, fmt)
+    except:
+        return None
 
 
 def transform_time_fmt(time_str, src_fmt, dst_fmt=DEFAULT_TIME_FORMAT):
     time_obj = get_time_obj(time_str, src_fmt)
-    return get_time_str(time_obj, dst_fmt)
+    time_str = get_time_str(time_obj, dst_fmt)
+    return time_str
 
 
 def mkdirs(dir):
@@ -39,12 +46,12 @@ def save_json(data, path):
     print("Save json data (size = {}) to {} done".format(len(data), path))
 
 
-def save_csv(data, path, fields=None):
+def save_csv(df, path, fields=None):
     if fields is None or len(fields) == 0:
-        df = pd.DataFrame(data)
+        columns = df.columns
     else:
-        df = pd.DataFrame(data, columns=fields)
-    df.to_csv(path, index=False)
+        columns = fields
+    df.to_csv(path, index=False, columns=columns)
     print("Save csv data (size = {}) to {} done".format(df.shape[0], path))
 
 
@@ -82,8 +89,8 @@ def get_crawl_limit_setting(domain):
     return limit
 
 
-def get_export_fields_setting():
-    return settings.EXPORT_FIELDS
+# def get_export_fields_setting():
+#     return settings.EXPORT_FIELDS
 
 
 def get_export_format_setting():

@@ -9,9 +9,14 @@ from scrapy import Field, Item
 
 
 class Product(Item):
+    domain = Field()
+    product_id = Field()
+    url = Field()
     brand = Field()
     category = Field()
     model = Field()
-    url = Field()
-    text = Field()
     price = Field()
+    seller = Field()
+    info = Field()
+    ratings = Field()
+    reviews = Field()
