@@ -61,9 +61,6 @@ def crawl():
     # print("\n".join(proxy_urls[:10]))
 
 
-
-
-
 if __name__ == "__main__":
     pass
-    # crawl()
+    crawl()

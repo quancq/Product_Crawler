@@ -47,6 +47,8 @@ def save_json(data, path):
 
 
 def save_csv(df, path, fields=None):
+    dir = path[:path.rfind("/")]
+    mkdirs(dir)
     if fields is None or len(fields) == 0:
         columns = df.columns
     else:
