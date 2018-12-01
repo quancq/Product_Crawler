@@ -48,6 +48,16 @@ def save_csv(data, path, fields=None):
     print("Save csv data (size = {}) to {} done".format(df.shape[0], path))
 
 
+def load_list(path):
+    data = []
+    if os.path.exists(path):
+        with open(path, 'r') as f:
+            data = f.readlines()
+        data = [e.strip() for e in data]
+
+    return data
+
+
 def save_list(data, path):
     dir = path[:path.rfind("/")]
     mkdirs(dir)

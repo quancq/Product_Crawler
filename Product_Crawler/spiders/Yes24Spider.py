@@ -11,7 +11,7 @@ class Yes24Spider(ProductSpider):
     base_url = "https://www.yes24.vn"
 
     url_category_list = [
-        # ("https://www.yes24.vn/thuc-pham/thuc-pham-chuc-nang-c679630", "Thực phẩm chức năng"),
+        ("https://www.yes24.vn/thuc-pham/thuc-pham-chuc-nang-c679630", "Thực phẩm chức năng"),
     ]
 
     def start_requests(self):
@@ -28,52 +28,49 @@ class Yes24Spider(ProductSpider):
     def parse_category(self, response):
         meta = dict(response.meta)
 
-        # Navigate to product
-        product_urls = response.css(".th-product-item>a::attr(href)").extract()
+        # Navigate to item
+        item_urls = response.css(".th-product-item>a::attr(href)").extract()
 
-        self.logger.info("Parse url {}, Num Product urls : {}".format(response.url, len(product_urls)))
-        for product_url in product_urls:
-            # product_url = self.base_url + product_url
+        self.logger.info("Parse url {}, Num item urls : {}".format(response.url, len(item_urls)))
+        for item_url in item_urls:
+            # item_url = self.base_url + item_url
 
-            if utils.is_valid_url(product_url):
-                yield Request(product_url, self.parse_product, meta={"category": meta["category"]},
+            if utils.is_valid_url(item_url):
+                yield Request(item_url, self.parse_item, meta={"category": meta["category"]},
                               errback=self.errback)
 
         # Navigate to next page
-        if meta["page_idx"] < self.page_per_category_limit and len(product_urls) > 0:
+        if meta["page_idx"] < self.page_per_category_limit and len(item_urls) > 0:
             meta["page_idx"] += 1
             next_page = meta["category_url_fmt"].format(meta["page_idx"])
             yield Request(next_page, self.parse_category, meta=meta, errback=self.errback)
 
-    def parse_product(self, response):
-        # This method havent coded !!!!!!!!!
-        content_div = response.css(".contentleft")
-
+    def parse_item(self, response):
         url = response.url
-        lang = self.lang
-        title = content_div.css(".titledetail h1::text").extract_first()
+        intro_div = response.css("#tr-intro-productdt")
+        model = intro_div.css(".tr-prd-name2::text").extract_first().strip()
+        brand = intro_div.css(".tr-thuonghieu-reg>a::text").extract_first().strip()
         category = response.meta["category"]
-        intro = content_div.css("#ContentRightHeight .sapo::text").extract_first()
-        content = ' '.join(content_div.css("#ContentRightHeight #divNewsContent ::text").extract())
-        time = content_div.css("#ContentRightHeight .ngayxuatban::text").extract_first()
 
-        # Transform time to uniform format
-        if time is not None:
-            time = time.strip()
-            time = self.transform_time_fmt(time, src_fmt="%d/%m/%Y %H:%M")
+        # intro = intro_div.css(".tr-short-content::text").extract()
+        # intro = [elm.strip() for elm in intro]
+        # intro = " ".join(intro)
 
-        self.article_scraped_count += 1
-        if self.article_scraped_count % 100 == 0:
-            self.logger.info("Spider {}: Crawl {} items".format(self.name, self.article_scraped_count))
+        price = intro_div.css(".th-detail-price::text").extract_first().strip()
+        info = response.css("#tr-detail-productdt .tr-prd-info-content ::text").extract()
+        text = " ".join([elm.strip() for elm in info])
 
-        yield Article(
+        self.item_scraped_count += 1
+        if self.item_scraped_count % 100 == 0:
+            self.logger.info("Spider {}: Crawl {} items".format(self.name, self.item_scraped_count))
+
+        yield Product(
             url=url,
-            lang=lang,
-            title=title,
+            brand=brand,
             category=category,
-            intro=intro,
-            content=content,
-            time=time
+            model=model,
+            text=text,
+            price=price
         )
 
     def errback(self, failure):

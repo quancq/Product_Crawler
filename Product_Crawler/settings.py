@@ -50,11 +50,33 @@ ROBOTSTXT_OBEY = True
 #    'Product_Crawler.middlewares.ProductCrawlerSpiderMiddleware': 543,
 #}
 
+# Proxy middleware settings
+# Retry many times since proxies often fail
+RETRY_TIMES = 3
+# Retry on most error codes since proxies fail for different reasons
+RETRY_HTTP_CODES = [500, 503, 504, 400, 403, 404, 408]
+
 # Enable or disable downloader middlewares
 # See https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
-#DOWNLOADER_MIDDLEWARES = {
-#    'Product_Crawler.middlewares.ProductCrawlerDownloaderMiddleware': 543,
-#}
+DOWNLOADER_MIDDLEWARES = {
+    'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
+    'scrapy_proxies.RandomProxy': 100,
+    "scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware": 110,
+   # 'Product_Crawler.middlewares.ProductCrawlerDownloaderMiddleware': 543
+}
+
+# Proxy list containing entries like
+# http://host1:port
+# http://username:password@host2:port
+# http://host3:port
+# ...
+PROXY_LIST = "./Product_Crawler/Proxy/proxy_list.txt"
+
+# Proxy mode
+# 0 = Every requests have different proxy
+# 1 = Take only one proxy from the list and assign it to every requests
+# 2 = Put a custom proxy to use in the settings
+PROXY_MODE = 0
 
 # Enable or disable extensions
 # See https://doc.scrapy.org/en/latest/topics/extensions.html
@@ -64,9 +86,9 @@ ROBOTSTXT_OBEY = True
 
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'Product_Crawler.pipelines.ProductCrawlerPipeline': 300,
-#}
+ITEM_PIPELINES = {
+   'Product_Crawler.pipelines.SaveFilePipeline': 300,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html

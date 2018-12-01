@@ -1,5 +1,6 @@
 CRAWL_LIMIT = {
-    "default_crawl_limit": 15
+    "Yes24": 3,
+    "default_crawl_limit": 5
 }
 
 # file_chunk_size = 1000

@@ -6,8 +6,7 @@ class ProductSpider(scrapy.Spider):
     def __init__(self, name=None, **kwargs):
         super(ProductSpider, self).__init__(name=name, **kwargs)
         self.page_per_category_limit = utils.get_crawl_limit_setting(name)
-        self.product_scraped_count = 0
-        self.lang = "vi"
+        self.item_scraped_count = 0
 
     def parse(self, response):
         raise NotImplementedError()
