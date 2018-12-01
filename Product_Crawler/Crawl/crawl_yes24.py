@@ -47,6 +47,7 @@ def get_brands():
                 end_index = text.find("'", start_index+1)
                 brand_search_url = text[start_index+1: end_index]
                 break
+
         if brand_search_url is not None:
             # Crawl brands
             brand_search_url = "https://www.yes24.vn" + brand_search_url.replace("&amp;", "&")
@@ -61,13 +62,12 @@ def get_brands():
     # for cat, brands in map_cat_brands.items():
     #     print("Category : {}, Brands : {}".format(cat, brands))
 
-    cat_brands = []
-    for cat, brands in map_cat_brands.items():
-        cat_brands.append((cat, ','.join(brands)))
-
     save_path = "./Data/Yes24/Category_Brands.json"
     utils.save_json(map_cat_brands, save_path)
 
+    cat_brands = []
+    for cat, brands in map_cat_brands.items():
+        cat_brands.append((cat, ','.join(brands)))
     df = pd.DataFrame(cat_brands, columns=["Category", "Brands"])
     save_path = "./Data/Yes24/Category_Brands.csv"
     utils.save_csv(df, save_path)
