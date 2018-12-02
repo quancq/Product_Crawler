@@ -8,6 +8,7 @@ from lxml import html
 import requests
 import math
 import json
+import html as h
 
 
 class LazadaSpider(ProductSpider):
@@ -16,7 +17,9 @@ class LazadaSpider(ProductSpider):
     base_url = "https://www.lazada.vn"
 
     url_category_list = [
-        ("https://www.lazada.vn/ca-phe/", "Cà phê")
+        # ("https://www.lazada.vn/ca-phe/", "Cà phê"),
+        # ("https://www.lazada.vn/snack-do-an-vat/", "Snack Đồ ăn vặt"),
+        ("https://www.lazada.vn/dien-thoai-di-dong/", "Điện thoại di động")
     ]
 
     def start_requests(self):
@@ -24,7 +27,7 @@ class LazadaSpider(ProductSpider):
         for category_url, category in self.url_category_list:
             meta = {
                 "category": category,
-                "category_url_fmt": category_url + "?page={}",
+                "category_url_fmt": category_url + "?spm=a2o4n.searchlistcategory.0.0.29315d52C9PFlW&page={}",
                 "page_idx": page_idx
             }
             category_url = meta["category_url_fmt"].format(meta["page_idx"])
@@ -34,8 +37,7 @@ class LazadaSpider(ProductSpider):
         meta = dict(response.meta)
 
         # Find item data in script tag
-        # item_urls = response.css(".th-product-item>a::attr(href)").extract()
-        scripts = response.css("script")
+        scripts = response.css("script").extract()
         prefix = "<script>window.pageData="
         postfix = "</script>"
         data = "{}"
@@ -50,18 +52,25 @@ class LazadaSpider(ProductSpider):
         self.logger.info("Parse url {}, Num item urls : {}".format(response.url, len(items)))
         for item in items:
             # item_url = self.base_url + item_url
-            item_url = "https:" + item["product_url"]
+            item_url = "https:" + item["productUrl"]
             item_data = dict(product_id=item["itemId"], model=item["name"], price=item["priceShow"],
-                             description=item["description"], review_count=item["review"],
+                             description=item["description"], num_reviews=item["review"],
                              brand=item["brandName"], seller=item["sellerName"])
-
+            # print("\n\n\nItem url : {}\n\n\n".format(item_url))
             if utils.is_valid_url(item_url):
                 yield Request(item_url, self.parse_item,
                               meta=dict(category=meta["category"], item=item_data),
                               errback=self.errback)
+            else:
+                print("\n\nERROR         XXXXXXXx     xXXX\nItem url : {}\n\n\n".format(item_url))
 
         # Navigate to next page
+        print("\n\n\n======== NEXT NEXT NEXT NEXT NEXT =========\n\n")
+        print("------  Page:  {} ---- Len(items): {}   --------\n".format(meta["page_idx"]+1, len(items)))
         if meta["page_idx"] < self.page_per_category_limit and len(items) > 0:
+            print("\n\n\n======== NEXT NEXT NEXT NEXT NEXT =========\n\n")
+            print("------    {}    --------".format(meta["page_idx"] + 1))
+            print("\n\n\n======== NEXT NEXT NEXT NEXT NEXT =========\n\n")
             meta["page_idx"] += 1
             next_page = meta["category_url_fmt"].format(meta["page_idx"])
             yield Request(next_page, self.parse_category, meta=meta, errback=self.errback)
@@ -70,41 +79,65 @@ class LazadaSpider(ProductSpider):
         item = response.meta["item"]
         url = response.url
         category = response.meta["category"]
-        intro_div = response.css("#tr-intro-productdt")
-        product_id = response.css("#productNo::attr(value)").extract_first()
-        model = intro_div.css(".tr-prd-name2::text").extract_first().strip()
-        brand = intro_div.css(".tr-thuonghieu-reg>a::text").extract_first().strip()
-        seller_url = intro_div.css(".tr-gn-supplier a::attr(href)").extract_first()
 
-        # Crawl seller name
-        root = html.document_fromstring(requests.get(seller_url).content)
-        seller = root.cssselect(".tr-pr-name1")[0].text or ""
+        product_id = item.get("product_id", "")
+        model = item.get("model", "")
+        brand = item.get("brand", "")
+        seller = item.get("seller", "")
+        price = item.get("price", "")
 
-        # intro = intro_div.css(".tr-short-content::text").extract()
-        # intro = [elm.strip() for elm in intro]
-        # intro = " ".join(intro)
+        description = item.get("description", [""])
+        description = description[0]
+        num_reviews = item["num_reviews"]       # This is number ratings, not reviews
 
-        price = intro_div.css(".th-detail-price::text").extract_first().strip()
-        info = response.css("#tr-detail-productdt .tr-prd-info-content ::text").extract()
-        info = " ".join([elm.strip() for elm in info])
+        # Extract full info of product
+        info = ""
+        try:
+            scripts = response.css("script").extract()
+            keyword = "pageUrl"
+            page_url = ""
+            for script in scripts:
+                start_index = script.find(keyword)
+                if start_index >= 0:
+                    start_index = start_index + len(keyword) + 3
+                    end_index = script.find('"', start_index)
+                    page_url = "https:" + script[start_index: end_index]
+                    break
+            if utils.is_valid_url(page_url):
+                res_content = requests.get(page_url).content.decode("raw_unicode_escape")
+                sub_str = '"moduleData":{"html"'
+                start_index = res_content.find(sub_str)
+                if start_index >= 0:
+                    start_index += len('"moduleData":')
+                    end_index = res_content.find("}]}", start_index) + 3
+                    json_str = res_content[start_index: end_index]
+                    json_str = h.unescape(json_str)
+                    try:
+                        json_data = json.loads(json_str)
+                    except:
+                        print("\n\nRes_content\n{}\n\n".format(res_content))
+                        print("Start_index : {} --- End_index : {}\n\n".format(start_index, end_index))
+                        postfix = '"picture":""}'
+                        end_index = res_content.find(postfix, start_index) + len(postfix)
+                        print("Start_index : {} --- End_index : {}\n\n".format(start_index, end_index))
+                        json_str = res_content[start_index: end_index]
+                        json_data = json.loads(json_str)
+                        print("\n\n Parse json 2nd successful\n\n")
 
-        # Calculate rating count
-        num_reviews = response.css("#tr-productdt-rank .vote-count::text").extract_first()
-        num_reviews = 0 if num_reviews is None else int(num_reviews)
+                    div_str = json_data["html"].strip()
+                    div_elm = html.document_fromstring(div_str)
+                    info = div_elm.text_content()
+                    info = utils.remove_duplicate_whitespaces(info)
+                    # print("\n====X=====\n {} \n====X====\n".format(res_content))
+        except:
+            print("Error when extract info of item ", url)
 
-        ratings = response.css("#tr-productdt-rank "
-                               ".tr-rank-percent>div:nth-child(3)::text").extract()
-        ratings = [float(r[:-1]) for r in ratings]
-        ratings = {5-i: int(round(num_reviews * r / 100)) for i, r in enumerate(ratings)}
+        info = description + " " + info
 
-        # Crawl all reviews of product
-        num_page_reviews = int(math.ceil(num_reviews / 5))
-
-        reviews = self.crawl_review(url=None, raw_html=response.text)
-        for page in range(2, num_page_reviews + 1):
-            url = "https://www.yes24.vn/Product/" \
-                  "GetProductComment?productNo={}&page={}".format(product_id, page)
-            reviews.extend(self.crawl_review(url))
+        # Crawl ratings and reviews
+        review_url = "https://my.lazada.vn/pdp/review/getReviewList?" \
+                     "itemId={}&pageSize={}&filter=0&sort=0&pageNo=1".format(product_id, num_reviews)
+        ratings, reviews = self.crawl_reviews(review_url)
 
         self.item_scraped_count += 1
         if self.item_scraped_count % 100 == 0:
@@ -128,38 +161,35 @@ class LazadaSpider(ProductSpider):
         self.logger.error("Error when send requests : ", failure.request)
 
     @staticmethod
-    def crawl_review(url, raw_html=None):
-        # url = "https://www.yes24.vn/Product/GetProductComment?productNo=1714033&page=17"
-        if url is None:
-            root = html.document_fromstring(raw_html)
-        else:
-            res = requests.get(url)
-            res.encoding = "latin-1"
-            root = html.document_fromstring(res.content)
+    def crawl_reviews(url):
+        # url = "https://my.lazada.vn/pdp/review/getReviewList?
+        # itemId=102463766&pageSize=15&filter=0&sort=0&pageNo=1"
+        ratings, reviews = {}, []
+        if utils.is_valid_url(url):
+            json_data = json.loads(requests.get(url).content.decode("utf-8"))
+            scores = json_data["model"]["ratings"]["scores"] or []
+            ratings = {5-i: rating for i, rating in enumerate(scores)}
 
-        # print(html.tostring(root, pretty_print=True))
+            full_reviews = json_data["model"]["items"] or []
+            reviews = []
+            for full_review in full_reviews:
+                rating = full_review["rating"]
 
-        review_divs = root.cssselect("div.tr-comment-detail")
+                review_time = full_review["zonedReviewTime"]
+                review_time = utils.convert_unix_time(review_time)
 
-        reviews = []
-        for review_div in review_divs:
-            spans = review_div.cssselect(".tr-cmtdt-star-date>span")
-            rating = len(spans[0].cssselect("span.tr-fa-yellow"))
+                bought_time = full_review["zonedBoughtDate"]
+                bought_time = utils.convert_unix_time(bought_time)
 
-            time = spans[1].text
-            # convert time to setting format
-            time = utils.transform_time_fmt(
-                time,
-                src_fmt="%H:%M:%S, %d/%m/%Y",
-                dst_fmt=DEFAULT_TIME_FORMAT
-            )
+                review_title = full_review.get("reviewTitle", "") or ""
+                review_content = full_review.get("reviewContent", "") or ""
+                comment = review_title + " " + review_content
 
-            comment = review_div.cssselect(".tr-cmdt-content-bottom")[0].text.strip()
-            if url is not None:
-                comment = comment.encode("latin-1").decode("utf-8")
-            reviews.append(dict(rating=rating, time=time, comment=comment))
+                reviews.append(dict(rating=rating, review_time=review_time,
+                                    comment=comment, bought_time=bought_time))
 
         # for review in reviews:
         #     print("Time : {} - Star : {} - Comment : {}".format(
-        #         review["time"], review["rating"], review["comment"]))
-        return reviews
+        #         review["review_time"], review["rating"], review["comment"]))
+
+        return ratings, reviews

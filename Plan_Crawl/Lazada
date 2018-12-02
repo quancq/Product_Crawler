@@ -1,0 +1,69 @@
+1. Input: link các sản phẩm của 1 thể loại (có số page)
+- Extract list item từ script -> windowdata. Với mỗi item thu được: item-id, item-url, item-name, price, description, ratingAvg, reviewCount, brandName, sellerName -> Thiếu text
+
+2. Từ product-id -> gửi request nhận về đầy đủ thông tin review, rating
+VD: https://my.lazada.vn/pdp/review/getReviewList?itemId=102463766&pageSize=15&filter=0&sort=0&pageNo=1
+- Cần biết số review để truyền vào pageSize để thu được mọi review trong 1 lần request
+- Còn thiếu text của item -> Phải vào url của item để extract từ html
+
+VD item của ý 1
+      {
+        "name": "Mật Ong Rừng Tây Nguyên 1 Lít (Giá Gốc, Bao Đủ Lít)",
+        "nid": "209670844",
+        "icons": [],
+        "productUrl": "//www.lazada.vn/products/mat-ong-rung-tay-nguyen-1-lit-gia-goc-bao-du-lit-i209670844-s261610002.html?search=1",
+        "image": "https://vn-live-01.slatic.net/original/43e49d1c5d1cc390571462b7bda07cf0.jpg",
+        "originalPrice": "200000.00",
+        "originalPriceShow": "200.000 ₫",
+        "price": "96000.0",
+        "priceShow": "96.000 ₫",
+        "discount": "-52%",
+        "ratingScore": "4.43548",
+        "review": "62",
+        "installment": "",
+        "tItemType": "nt_product",
+        "location": "Việt Nam",
+        "cheapest_sku": "209670844_VNAMZ-261610002",
+        "sku": "209670844_VNAMZ",
+        "skus": [
+          {
+            "id": "209670844_VNAMZ-261610002"
+          }
+        ],
+        "description": [
+          "Cam kết mật ong nguyên chất 100%",
+          "Giá rẻ do bán trực tiếp trênLazada không qua trung gian.",
+          "Mật ong được đóng gói trong chai nhựa 500ml hoặc 1000ml",
+          "Khách hàng vui lòng tham khảo về sản phẩm trước khi mua hàng.",
+          "Đề nghị một số Shop dừng chiêu trò cạnh tranh không lành mạnh. Bằng cách mua hàng rồi đánh giá xấu về sản phẩm của tôi. Nói mật ong của tôi là mật ong giả."
+        ],
+        "brandId": "3597",
+        "brandName": "OEM",
+        "sellerId": "100110530",
+        "sellerName": "Nhạt Cà Phê",
+        "thumbs": [
+          {
+            "image": "https://vn-live-01.slatic.net/original/43e49d1c5d1cc390571462b7bda07cf0.jpg",
+            "productUrl": "//www.lazada.vn/products/mat-ong-rung-tay-nguyen-1-lit-gia-goc-bao-du-lit-i209670844-s261610002.html?search=1",
+            "sku": "209670844_VNAMZ",
+            "skuId": "261610002"
+          }
+        ],
+        "restrictedAge": 0,
+        "categories": [
+          8799,
+          8872,
+          14446,
+          14749
+        ],
+        "clickTrace": "query:;nid:209670844;src:LazadaMainSrp;rn:71642309ddb352c62dd837b9c6efcf3a;region:vn;sku:209670844_VNAMZ;price:96000.0;client:desktop;supplier_id:100110530;asc_category_id:14749;item_id:209670844;sku_id:261610002;shop_id:112775",
+        "addToCartSkus": [
+          {
+            "sku": "209670844_VNAMZ-261610002",
+            "skuId": "261610002"
+          }
+        ],
+        "itemId": "209670844",
+        "voucherId": "",
+        "skuId": "261610002"
+      },

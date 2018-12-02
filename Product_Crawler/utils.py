@@ -1,5 +1,6 @@
 import os, time, json, sys
 import urllib3
+import re
 import pandas as pd
 from datetime import datetime
 import Product_Crawler.project_settings as settings
@@ -24,6 +25,13 @@ def transform_time_fmt(time_str, src_fmt, dst_fmt=DEFAULT_TIME_FORMAT):
     time_obj = get_time_obj(time_str, src_fmt)
     time_str = get_time_str(time_obj, dst_fmt)
     return time_str
+
+
+def convert_unix_time(float_unix_time, dst_fmt=DEFAULT_TIME_FORMAT):
+    try:
+        return get_time_str(datetime.utcfromtimestamp(float_unix_time), fmt=dst_fmt)
+    except:
+        return ""
 
 
 def mkdirs(dir):
@@ -97,3 +105,7 @@ def get_crawl_limit_setting(domain):
 
 def get_export_format_setting():
     return settings.EXPORT_FORMAT
+
+
+def remove_duplicate_whitespaces(str):
+    return re.sub("\s+", " ", str)

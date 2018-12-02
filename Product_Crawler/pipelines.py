@@ -58,20 +58,25 @@ class SaveFilePipeline(object):
         else:
             items_df, ratings_df, reviews_df = [], [], []
             for item in items:
-                items_df.append((item["domain"], item["url"], item["product_id"],
-                                 item["brand"], item["category"], item["model"],
-                                 item["price"], item["seller"], item["info"]))
+                domain, url = item.get("domain", ""), item.get("url", "")
+                product_id, brand = item.get("product_id", ""), item.get("brand", "")
+                category, model = item.get("category", ""), item.get("model", "")
+                price, seller = item.get("price", ""), item.get("seller", "")
+                info = item.get("info", "")
+
+                items_df.append((domain, url, product_id, brand,
+                                 category, model, price, seller, info))
 
                 ratings = item["ratings"]
-                ratings_df.append((item["domain"], item["url"], item["product_id"],
-                                   ratings.get(1, 0), ratings.get(2, 0),
-                                   ratings.get(3, 0), ratings.get(4, 0),
-                                   ratings.get(5, 0)))
+                ratings_df.append((domain, url, product_id, ratings.get(1, 0),
+                                   ratings.get(2, 0), ratings.get(3, 0),
+                                   ratings.get(4, 0), ratings.get(5, 0)))
 
                 reviews = item["reviews"]
                 for review in reviews:
-                    reviews_df.append((item["domain"], item["url"], item["product_id"],
-                                       review["time"], review["rating"], review["comment"]))
+                    reviews_df.append((domain, url, product_id, review.get("rating", ""),
+                                       review.get("comment", ""), review.get("review_time", ""),
+                                       review.get("bought_time", "")))
 
             # Save items
             columns = ["Domain", "Url", "Product_id", "Brand", "Category",
@@ -89,7 +94,8 @@ class SaveFilePipeline(object):
             utils.save_csv(ratings_df, save_path)
 
             # Save reviews
-            columns = ["Domain", "Url", "Product_id", "Time", "Rating", "Comment"]
+            columns = ["Domain", "Url", "Product_id", "Rating",
+                       "Comment", "Review Time", "Bought Time"]
             reviews_df = pd.DataFrame(reviews_df, columns=columns)
             save_path = os.path.join(save_dir, "{}_{}reviews.csv".format(
                 prefix_fname, reviews_df.shape[0]))

@@ -143,9 +143,10 @@ class Yes24Spider(ProductSpider):
             comment = review_div.cssselect(".tr-cmdt-content-bottom")[0].text.strip()
             if url is not None:
                 comment = comment.encode("latin-1").decode("utf-8")
-            reviews.append(dict(rating=rating, time=time, comment=comment))
+            reviews.append(dict(rating=rating, review_time=time,
+                                comment=comment, bought_time=""))
 
         # for review in reviews:
         #     print("Time : {} - Star : {} - Comment : {}".format(
-        #         review["time"], review["rating"], review["comment"]))
+        #         review["review_time"], review["rating"], review["comment"]))
         return reviews
