@@ -68,37 +68,42 @@ class SaveFilePipeline(object):
                                  category, model, price, seller, info))
 
                 ratings = item["ratings"]
-                ratings_df.append((domain, url, product_id, ratings.get(1, 0),
-                                   ratings.get(2, 0), ratings.get(3, 0),
-                                   ratings.get(4, 0), ratings.get(5, 0)))
+                if len(ratings) > 0:
+                    ratings_df.append((domain, url, product_id, ratings.get(1, 0),
+                                       ratings.get(2, 0), ratings.get(3, 0),
+                                       ratings.get(4, 0), ratings.get(5, 0)))
 
                 reviews = item["reviews"]
                 for review in reviews:
-                    reviews_df.append((domain, url, product_id, review.get("rating", ""),
-                                       review.get("comment", ""), review.get("review_time", ""),
-                                       review.get("bought_time", "")))
+                    if len(review) > 0:
+                        reviews_df.append((domain, url, product_id, review.get("rating", ""),
+                                           review.get("comment", ""), review.get("review_time", ""),
+                                           review.get("bought_time", "")))
 
             # Save items
             columns = ["Domain", "Url", "Product_id", "Brand", "Category",
                        "Model", "Price", "Seller", "Info"]
-            items_df = pd.DataFrame(items_df, columns=columns)
-            save_path = os.path.join(save_dir, "{}_{}items.csv".format(
-                prefix_fname, items_df.shape[0]))
-            utils.save_csv(items_df, save_path)
+            if len(items_df) > 0:
+                items_df = pd.DataFrame(items_df, columns=columns)
+                save_path = os.path.join(save_dir, "{}_{}items.csv".format(
+                    prefix_fname, items_df.shape[0]))
+                utils.save_csv(items_df, save_path)
 
             # Save ratings
             columns = ["Domain", "Url", "Product_id", "1", "2", "3", "4", "5"]
-            ratings_df = pd.DataFrame(ratings_df, columns=columns)
-            save_path = os.path.join(save_dir, "{}_{}ratings.csv".format(
-                prefix_fname, ratings_df.shape[0]))
-            utils.save_csv(ratings_df, save_path)
+            if len(ratings_df) > 0:
+                ratings_df = pd.DataFrame(ratings_df, columns=columns)
+                save_path = os.path.join(save_dir, "{}_{}ratings.csv".format(
+                    prefix_fname, ratings_df.shape[0]))
+                utils.save_csv(ratings_df, save_path)
 
             # Save reviews
             columns = ["Domain", "Url", "Product_id", "Rating",
                        "Comment", "Review Time", "Bought Time"]
-            reviews_df = pd.DataFrame(reviews_df, columns=columns)
-            save_path = os.path.join(save_dir, "{}_{}reviews.csv".format(
-                prefix_fname, reviews_df.shape[0]))
-            utils.save_csv(reviews_df, save_path)
+            if len(reviews_df) > 0:
+                reviews_df = pd.DataFrame(reviews_df, columns=columns)
+                save_path = os.path.join(save_dir, "{}_{}reviews.csv".format(
+                    prefix_fname, reviews_df.shape[0]))
+                utils.save_csv(reviews_df, save_path)
 
         logger.info("Save {} items to {} done".format(len(items), save_dir))

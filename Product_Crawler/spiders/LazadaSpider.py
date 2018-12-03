@@ -17,9 +17,10 @@ class LazadaSpider(ProductSpider):
     base_url = "https://www.lazada.vn"
 
     url_category_list = [
-        ("https://www.lazada.vn/ca-phe/", "Cà phê"),
+        # ("https://www.lazada.vn/ca-phe/", "Cà phê"),
         # ("https://www.lazada.vn/snack-do-an-vat/", "Snack Đồ ăn vặt"),
-        # ("https://www.lazada.vn/dien-thoai-di-dong/", "Điện thoại di động")
+        # ("https://www.lazada.vn/dien-thoai-di-dong/", "Điện thoại di động"),
+        ("https://www.lazada.vn/do-an-sang/", "Đồ ăn sáng")
     ]
 
     def start_requests(self):
@@ -27,7 +28,7 @@ class LazadaSpider(ProductSpider):
         for category_url, category in self.url_category_list:
             meta = {
                 "category": category,
-                "category_url_fmt": category_url + "?ajax=false&page={}",
+                "category_url_fmt": category_url + "?page={}&spm=a2o4n.home.cate_6.1.19056afewVNlAG",
                 "page_idx": page_idx
             }
             category_url = meta["category_url_fmt"].format(meta["page_idx"])
@@ -37,18 +38,19 @@ class LazadaSpider(ProductSpider):
         meta = dict(response.meta)
 
         # Find item data in script tag
-        # scripts = response.css("script").extract()
-        # prefix = "<script>window.pageData="
-        # postfix = "</script>"
-        # data = "{}"
-        # for script in scripts:
-        #     if script.startswith(prefix):
-        #         data = script
-        #         break
-        # data = data[len(prefix):-len(postfix)]
-        # data = json.loads(data)
+        scripts = response.css("script").extract()
+        prefix = "<script>window.pageData="
+        postfix = "</script>"
+        data = "{}"
+        for script in scripts:
+            if script.startswith(prefix):
+                data = script
+                break
+        data = data[len(prefix):-len(postfix)]
+        print(scripts)
+        data = json.loads(data)
 
-        data = json.loads(response.text)
+        # data = json.loads(response.text)
         items = data["mods"]["listItems"]
 
         self.logger.info("Parse url {}, Num item urls : {}".format(response.url, len(items)))

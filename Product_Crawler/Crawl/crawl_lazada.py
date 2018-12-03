@@ -10,14 +10,18 @@ def crawl_item_urls(page_url=None):
         page_url = "https://www.lazada.vn/ca-phe/?ajax=false&page=1"
 
     content = requests.get(page_url).content.decode("utf-8")
+    print("Page url : ", page_url)
+    print(content)
     data = json.loads(content)
     items = data["mods"]["listItems"]
-    # utils.save_json(items, "./Data/Lazada/temp1")
-    item_urls = []
+    item_urls, item_ids = [], []
     for item in items:
         item_urls.append(item["productUrl"])
+        item_ids.append(item["itemId"])
 
-    return content
+    page_id = page_url[page_url.rfind("page=") + 5:]
+    utils.save_list(item_ids, "./Data/Lazada/itemId_page{}.txt".format(page_id))
+    return item_urls
 
 
 if __name__ == "__main__":
@@ -40,8 +44,3 @@ if __name__ == "__main__":
     c1 = crawl_item_urls(page_url_fmt.format(1))
     c2 = crawl_item_urls(page_url_fmt.format(2))
 
-    c1 = json.loads(c1)
-    c2 = json.loads(c2)
-
-    utils.save_json(c1, "./Data/Lazada/c1.txt")
-    utils.save_json(c2, "./Data/Lazada/c2.txt")
