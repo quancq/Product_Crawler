@@ -1,7 +1,7 @@
 CRAWL_LIMIT = {
     "Yes24": 2,
     "Lazada": 3,
-    "default_crawl_limit": 4
+    "default_crawl_limit": 3
 }
 
 # file_chunk_size = 1000

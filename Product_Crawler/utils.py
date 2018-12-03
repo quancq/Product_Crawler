@@ -67,10 +67,13 @@ def save_csv(df, path, fields=None):
 
 def load_list(path):
     data = []
-    if os.path.exists(path):
-        with open(path, 'r') as f:
-            data = f.readlines()
-        data = [e.strip() for e in data]
+    try:
+        if os.path.exists(path):
+            with open(path, 'r') as f:
+                data = f.readlines()
+            data = [e.strip() for e in data]
+    except:
+        print("Error when load list from ", path)
 
     return data
 

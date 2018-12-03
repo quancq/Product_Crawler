@@ -7,7 +7,7 @@ from Product_Crawler.project_settings import DEFAULT_TIME_FORMAT
 from lxml import html
 import requests
 import math
-import json
+import json, os
 import html as h
 
 
@@ -17,9 +17,9 @@ class LazadaSpider(ProductSpider):
     base_url = "https://www.lazada.vn"
 
     url_category_list = [
-        # ("https://www.lazada.vn/ca-phe/", "Cà phê"),
+        ("https://www.lazada.vn/ca-phe/", "Cà phê"),
         # ("https://www.lazada.vn/snack-do-an-vat/", "Snack Đồ ăn vặt"),
-        ("https://www.lazada.vn/dien-thoai-di-dong/", "Điện thoại di động")
+        # ("https://www.lazada.vn/dien-thoai-di-dong/", "Điện thoại di động")
     ]
 
     def start_requests(self):
@@ -27,7 +27,7 @@ class LazadaSpider(ProductSpider):
         for category_url, category in self.url_category_list:
             meta = {
                 "category": category,
-                "category_url_fmt": category_url + "?spm=a2o4n.searchlistcategory.0.0.29315d52C9PFlW&page={}",
+                "category_url_fmt": category_url + "?ajax=false&page={}",
                 "page_idx": page_idx
             }
             category_url = meta["category_url_fmt"].format(meta["page_idx"])
@@ -37,16 +37,18 @@ class LazadaSpider(ProductSpider):
         meta = dict(response.meta)
 
         # Find item data in script tag
-        scripts = response.css("script").extract()
-        prefix = "<script>window.pageData="
-        postfix = "</script>"
-        data = "{}"
-        for script in scripts:
-            if script.startswith(prefix):
-                data = script
-                break
-        data = data[len(prefix):-len(postfix)]
-        data = json.loads(data)
+        # scripts = response.css("script").extract()
+        # prefix = "<script>window.pageData="
+        # postfix = "</script>"
+        # data = "{}"
+        # for script in scripts:
+        #     if script.startswith(prefix):
+        #         data = script
+        #         break
+        # data = data[len(prefix):-len(postfix)]
+        # data = json.loads(data)
+
+        data = json.loads(response.text)
         items = data["mods"]["listItems"]
 
         self.logger.info("Parse url {}, Num item urls : {}".format(response.url, len(items)))
@@ -63,15 +65,14 @@ class LazadaSpider(ProductSpider):
                               errback=self.errback)
             else:
                 print("\n\nERROR         XXXXXXXx     xXXX\nItem url : {}\n\n\n".format(item_url))
-
         # Navigate to next page
         print("\n\n\n======== NEXT NEXT NEXT NEXT NEXT =========\n\n")
         print("------  Page:  {} ---- Len(items): {}   --------\n".format(meta["page_idx"]+1, len(items)))
         if meta["page_idx"] < self.page_per_category_limit and len(items) > 0:
-            print("\n\n\n======== NEXT NEXT NEXT NEXT NEXT =========\n\n")
-            print("------    {}    --------".format(meta["page_idx"] + 1))
-            print("\n\n\n======== NEXT NEXT NEXT NEXT NEXT =========\n\n")
             meta["page_idx"] += 1
+            print("\n\n\n======== NEXT NEXT NEXT NEXT NEXT =========\n\n")
+            print("------    {}    --------".format(meta["page_idx"]))
+            print("\n\n\n======== NEXT NEXT NEXT NEXT NEXT =========\n\n")
             next_page = meta["category_url_fmt"].format(meta["page_idx"])
             yield Request(next_page, self.parse_category, meta=meta, errback=self.errback)
 
