@@ -10,6 +10,7 @@ from Product_Crawler import utils
 import os, math, re
 from scrapy.exceptions import DropItem
 import pandas as pd
+import json
 
 
 class SaveFilePipeline(object):
@@ -43,7 +44,7 @@ class SaveFilePipeline(object):
         map_category_items = self.data.get(spider_name)
         # spider_save_dir = os.path.join(self.save_dir, spider_name)
         for category, items in map_category_items.items():
-            category_save_dir = os.path.join(self.base_dir, spider_name, category)
+            category_save_dir = os.path.join(self.base_dir, spider_name, category, self.time_now_str)
             utils.mkdirs(category_save_dir)
             prefix_fname = "{}_{}".format(spider_name, self.time_now_str)
 
@@ -62,10 +63,11 @@ class SaveFilePipeline(object):
                 product_id, brand = item.get("product_id", ""), item.get("brand", "")
                 category, model = item.get("category", ""), item.get("model", "")
                 price, seller = item.get("price", ""), item.get("seller", "")
-                info = item.get("info", "")
+                info, tags = item.get("info", ""), item.get("tag", "")
+                others = json.dumps(item.get("others", ""))
 
-                items_df.append((domain, url, product_id, brand,
-                                 category, model, price, seller, info))
+                items_df.append((domain, url, product_id, brand, category,
+                                 model, price, seller, tags, info, others))
 
                 ratings = item["ratings"]
                 if len(ratings) > 0:
@@ -82,7 +84,7 @@ class SaveFilePipeline(object):
 
             # Save items
             columns = ["Domain", "Url", "Product_id", "Brand", "Category",
-                       "Model", "Price", "Seller", "Info"]
+                       "Model", "Price", "Seller", "Tags", "Info", "Others"]
             if len(items_df) > 0:
                 items_df = pd.DataFrame(items_df, columns=columns)
                 save_path = os.path.join(save_dir, "{}_{}items.csv".format(

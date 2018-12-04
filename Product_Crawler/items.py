@@ -17,6 +17,8 @@ class Product(Item):
     model = Field()
     price = Field()
     seller = Field()
+    tags = Field()
     info = Field()
+    others = Field()
     ratings = Field()
     reviews = Field()

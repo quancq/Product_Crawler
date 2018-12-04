@@ -87,9 +87,9 @@ class SendoSpider(ProductSpider):
             item_url_key = full_item["cat_path"].replace(".html/", "")
             item_url = "https://www.sendo.vn/m/wap_v2/full/san-pham/{}".format(item_url_key)
 
-            item = dict(category=meta["category"], product_id=full_item["product_id"],
-                        model=full_item["name"], price=full_item["final_price"],
-                        seller=full_item["shop_name"], full_category_id=full_item["category_id"],
+            item = dict(category=meta["category"], category_id=category_id,
+                        product_id=full_item["product_id"], model=full_item["name"],
+                        price=full_item["final_price"], seller=full_item["shop_name"],
                         num_ratings=full_item["rating_info"]["total_rated"])
 
             # All code belows this line havent checked
@@ -100,20 +100,29 @@ class SendoSpider(ProductSpider):
         url = response.url
         meta = response.meta
         category = meta["category"]
-        brand = meta["brand"]
+        product_id = meta["product_id"]
         model = meta["model"]
+        seller = meta["seller"]
+        price = meta["price"]
 
-        price = response.css("ul.pdt-ul-price div[itemprop=price]::attr(content)").extract_first().strip()
+        json_data = json.loads(response.text)
+        description = json_data["result"]["data"]["description"]
+        root = html.document_fromstring(description)
 
-        intro = response.css("div.pdtl-des ::text").extract()
-        intro = ". ".join(intro)
-        intro = re.sub("\s+", " ", intro)
-
-        info = response.css("div.pd-info-left ::text").extract()
-        info = ". ".join([elm.strip() for elm in info])
+        info = root.text_content()
         info = re.sub("\s+", " ", info)
 
-        info = intro + ". " + info
+        try:
+            brand = json_data["brand_info"].get("name", "")
+        except:
+            brand = ""
+
+        full_category_id = json_data["category_id"]
+        order_count = json_data["order_count"]
+        counter_view = json_data["counter_view"]
+        # extract shop info, tags ...
+
+        num_ratings = meta["num_ratings"]
 
         self.item_scraped_count += 1
         if self.item_scraped_count % 100 == 0:
@@ -121,16 +130,16 @@ class SendoSpider(ProductSpider):
 
         yield Product(
             domain=self.allowed_domains[0],
-            product_id="",
+            product_id=product_id,
             url=url,
             brand=brand,
             category=category,
             model=model,
             info=info,
             price=price,
-            seller="",
-            reviews=[],
-            ratings={}
+            seller=seller,
+            reviews=reviews,
+            ratings=ratings
         )
 
     def errback(self, failure):
