@@ -82,23 +82,23 @@ class SendoSpider(ProductSpider):
             return 0
 
         self.logger.info("Parse url {}, Num item urls : {}".format(response.url, len(full_items)))
-        for full_item in full_items:
+        for full_item in full_items[:6]:
 
-            item_url_key = full_item["cat_path"].replace(".html/", "")
+            cat_path = full_item["cat_path"]
+            item_url_key = cat_path.replace(".html/", "")
             item_url = "https://www.sendo.vn/m/wap_v2/full/san-pham/{}".format(item_url_key)
 
-            item = dict(category=meta["category"], category_id=category_id,
+            url = self.base_url + "/" + cat_path
+            item = dict(category=meta["category"], category_id=category_id, url=url,
                         product_id=full_item["product_id"], model=full_item["name"],
-                        price=full_item["final_price"], seller=full_item["shop_name"],
-                        num_ratings=full_item["rating_info"]["total_rated"])
+                        price=full_item["final_price"], seller=full_item["shop_name"])
 
-            # All code belows this line havent checked
             if utils.is_valid_url(item_url):
                 yield Request(item_url, self.parse_item, meta=item, errback=self.errback)
 
     def parse_item(self, response):
-        url = response.url
         meta = response.meta
+        url = meta["url"]
         category = meta["category"]
         product_id = meta["product_id"]
         model = meta["model"]
@@ -106,23 +106,58 @@ class SendoSpider(ProductSpider):
         price = meta["price"]
 
         json_data = json.loads(response.text)
-        description = json_data["result"]["data"]["description"]
+        items_data = json_data["result"]["data"]
+        description = items_data["description"]
         root = html.document_fromstring(description)
 
         info = root.text_content()
         info = re.sub("\s+", " ", info)
 
         try:
-            brand = json_data["brand_info"].get("name", "")
+            brand = items_data["brand_info"].get("name", "")
         except:
             brand = ""
 
-        full_category_id = json_data["category_id"]
-        order_count = json_data["order_count"]
-        counter_view = json_data["counter_view"]
-        # extract shop info, tags ...
+        full_category_id = items_data["category_id"]
+        order_count = items_data["order_count"]
+        counter_view = items_data["counter_view"]
 
-        num_ratings = meta["num_ratings"]
+        shop_info = items_data["shop_info"]
+        shop_info = dict(shop_id=shop_info.get("shop_id", ""),
+                         shop_name=shop_info.get("shop_name", ""),
+                         good_review_percent=shop_info.get("good_review_percent", ""),
+                         warehourse_region_name=shop_info.get("warehourse_region_name", ""),
+                         phone_number=shop_info.get("phone_number", ""),
+                         shop_url=shop_info.get("shop_url", ""),
+                         rating_avg=shop_info.get("rating_avg", ""),
+                         rating_count=shop_info.get("rating_count", ""),
+                         product_total=shop_info.get("product_total", ""))
+
+        others = dict(full_category_id=full_category_id,
+                      order_count=order_count,
+                      counter_view=counter_view,
+                      shop_info=shop_info)
+
+        tags = json_data.get("keywords", "")
+
+        ratings = {r: items_data["rating_info"].get("star{}".format(r), 0) for r in range(1, 6)}
+
+        # Crawl reviews of product
+        num_ratings = items_data["rating_info"].get("total_rated", 0)
+        num_ratings = 10
+        review_url = "https://www.sendo.vn/m/wap_v2/san-pham/rating/{}?p=1&s={}".format(product_id, num_ratings)
+
+        review_data = json.loads(requests.get(review_url).content.decode("utf-8"))
+        full_reviews = review_data["result"]["data"]
+
+        reviews = []
+        for full_review in full_reviews:
+            rating = full_review["star"]
+            comment = full_review["content"]
+            review_time = full_review["update_time"]
+            review_time = utils.transform_time_fmt(review_time, src_fmt="%H:%M, %d thg %m, %Y", dst_fmt=DEFAULT_TIME_FORMAT)
+
+            reviews.append(dict(rating=rating, comment=comment, review_time=review_time))
 
         self.item_scraped_count += 1
         if self.item_scraped_count % 100 == 0:
@@ -136,10 +171,12 @@ class SendoSpider(ProductSpider):
             category=category,
             model=model,
             info=info,
+            tags=tags,
             price=price,
             seller=seller,
             reviews=reviews,
-            ratings=ratings
+            ratings=ratings,
+            others=others
         )
 
     def errback(self, failure):

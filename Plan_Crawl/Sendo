@@ -1,7 +1,7 @@
 1. Vào trang các sản phẩm của 1 thể loại (có số page) => Lấy json data từ script window.__INITIAL_STATE => Lấy ra category id
 => Nên crawl toàn bộ category_id 1 lần để sau này dùng
 
-1.1. Vào 1 page để lấy tổng số item để dùng cho bước 2 (result - meta data - total count
+2.0. Vào 1 page để lấy tổng số item để dùng cho bước 2 (result - meta data - total count
 2. Từ category_id, gửi request page 1 để lấy total_items. Sau đó gửi req nhận về toàn bộ item
 VD: https://www.sendo.vn/m/wap_v2/category/product?category_id=1195&p=1&s=60&sortType=default_listing_desc
 
@@ -10,7 +10,7 @@ VD: https://www.sendo.vn/m/wap_v2/category/product?category_id=1195&p=1&s=60&sor
 3. Từ url item, gửi req để tìm info đầy đủ
 https://www.sendo.vn/m/wap_v2/full/san-pham/sua-nuti-nucalci-gold-800g-2856197
 
-- Lấy được: info, brand_info_name, ratings, tags (meta_data - keywords), full_catefory_id, và 1 số thông tin khác
+- Lấy được: info, brand_info_name, ratings, tags (meta_data - keywords), full_catefory_id, order_count, counter_view, shop_info
 
 4.
 VD: https://www.sendo.vn/m/wap_v2/san-pham/rating/2856197?p=1&s=30
