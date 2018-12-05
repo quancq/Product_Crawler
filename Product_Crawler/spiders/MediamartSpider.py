@@ -41,8 +41,16 @@ class MediamartSpider(ProductSpider):
         # ("https://mediamart.vn/may-giat/", "Máy giặt"),
         # ("https://mediamart.vn/may-say-quan-ao/", "Máy sấy quần áo"),
         # ("https://mediamart.vn/dieu-hoa-nhiet-do/", "Điều hòa nhiệt độ"),
-        ("https://mediamart.vn/binh-tam-nong-lanh/", "Bình tắm nóng lạnh"),
-        # ("", ""),
+        # ("https://mediamart.vn/binh-tam-nong-lanh/", "Bình tắm nóng lạnh"),
+        # ("https://mediamart.vn/may-cham-cong/", "Máy chấm công"),
+        # ("https://mediamart.vn/may-fax/", "Máy fax"),
+        # ("https://mediamart.vn/may-dem-tien/", "Máy đếm tiền"),
+        # ("https://mediamart.vn/may-huy-tai-lieu/", "Máy hủy tài liệu"),
+        # ("https://mediamart.vn/bo-luu-dien-ups/", "Bộ lưu điện"),
+        # ("https://mediamart.vn/may-in/", "Máy in"),
+        # ("https://mediamart.vn/may-chieu/", "Máy chiếu"),
+        # ("https://mediamart.vn/may-phat-dien/", "Máy phát điện"),
+        # ("https://mediamart.vn/may-loc-nuoc/", "Máy lọc nước"),
         # ("", ""),
     ]
 

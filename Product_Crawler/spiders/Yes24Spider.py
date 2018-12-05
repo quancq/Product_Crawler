@@ -19,7 +19,9 @@ class Yes24Spider(ProductSpider):
         # ("https://www.yes24.vn/me-be", "Mẹ và bé"),
         # ("https://www.yes24.vn/gia-dung", "Gia dụng"),
         # ("https://www.yes24.vn/dien-may", "Điện máy"),
-        ("https://www.yes24.vn/phu-kien", "Phụ kiện")
+        # ("https://www.yes24.vn/phu-kien", "Phụ kiện"),
+        ("https://www.yes24.vn/thuc-pham/thuc-pham-chuc-nang-c679630", "Thực phẩm chức năng"),
+        # ("", ""),
     ]
 
     def start_requests(self):
@@ -27,7 +29,7 @@ class Yes24Spider(ProductSpider):
         for category_url, category in self.url_category_list:
             meta = {
                 "category": category,
-                "category_url_fmt": category_url + "?item=60&page={}",
+                "category_url_fmt": category_url + "?item=120&page={}",
                 "page_idx": page_idx
             }
             category_url = meta["category_url_fmt"].format(meta["page_idx"])
@@ -64,7 +66,11 @@ class Yes24Spider(ProductSpider):
 
         # Crawl seller name
         root = html.document_fromstring(requests.get(seller_url).content)
-        seller = root.cssselect(".tr-pr-name1")[0].text or ""
+        name_elms = root.cssselect(".tr-pr-name1")
+        if len(name_elms) > 0:
+            seller = name_elms[0].text
+        else:
+            seller = ""
 
         # intro = intro_div.css(".tr-short-content::text").extract()
         # intro = [elm.strip() for elm in intro]
