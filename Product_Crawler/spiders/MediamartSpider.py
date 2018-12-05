@@ -17,7 +17,33 @@ class MediamartSpider(ProductSpider):
 
     url_category_list = [
         # ("https://mediamart.vn/may-giat/", "Máy giặt"),
-        ("https://mediamart.vn/smartphones/", "Điện thoại di động")
+        # ("https://mediamart.vn/smartphones/", "Điện thoại di động"),
+        # ("https://mediamart.vn/dien-thoai-di-dong-thuong/", "Điện thoại di động thường"),
+        # ("https://mediamart.vn/may-tinh-bang/", "Máy tính bảng"),
+        # ("https://mediamart.vn/laptop/", "Laptop"),
+        # ("https://mediamart.vn/may-tinh-de-ban/", "Máy tính để bàn"),
+        # ("https://mediamart.vn/may-anh-ky-thuat-so/", "Máy ảnh kỹ thuật số"),
+        # ("https://mediamart.vn/tivi/", "Tivi"),
+        # ("https://mediamart.vn/dan-am-thanh/", "Dàn âm thanh"),
+        # ("https://mediamart.vn/soundbar/", "Loa Soundbar"),
+        # ("https://mediamart.vn/karaoke/", "Karaoke"),
+        # ("https://mediamart.vn/dau-dia/", "Đầu đĩa"),
+        # ("https://mediamart.vn/loa-keo-loa-one-box/", "Loa kéo Loa Onebox"),
+        # ("https://mediamart.vn/amply/", "Amply"),
+        # ("https://mediamart.vn/dau-phat-hd/", "Đầu phát HD"),
+        # ("https://mediamart.vn/truyen-hinh-so/", "Truyền hình số"),
+        # ("https://mediamart.vn/micro/", "Micro"),
+        # ("https://mediamart.vn/cable/", "Cable"),
+        # ("https://mediamart.vn/gia-treo/", "Giá treo thiết bị điện tử"),
+        # ("https://mediamart.vn/tu-lanh/", "Tủ lạnh"),
+        # ("https://mediamart.vn/tu-dong/", "Tủ đông"),
+        # ("https://mediamart.vn/tu-lam-mat/", "Tủ làm mát"),
+        # ("https://mediamart.vn/may-giat/", "Máy giặt"),
+        # ("https://mediamart.vn/may-say-quan-ao/", "Máy sấy quần áo"),
+        # ("https://mediamart.vn/dieu-hoa-nhiet-do/", "Điều hòa nhiệt độ"),
+        ("https://mediamart.vn/binh-tam-nong-lanh/", "Bình tắm nóng lạnh"),
+        # ("", ""),
+        # ("", ""),
     ]
 
     def start_requests(self):

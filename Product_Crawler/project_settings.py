@@ -1,9 +1,9 @@
 CRAWL_LIMIT = {
     "Yes24": 2,
     "Lazada": 3,
-    "Mediamart": 3,
+    "Mediamart": -1,
     "Sendo": 2,
-    "default_crawl_limit": 2
+    "default_crawl_limit": None
 }
 
 # file_chunk_size = 1000

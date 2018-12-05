@@ -6,7 +6,8 @@ import chardet
 
 
 def crawl_latest_proxies():
-    url = "https://free-proxy-list.net"
+    # url = "https://free-proxy-list.net"
+    url = "https://www.sslproxies.org/"
     root = html.document_fromstring(requests.get(url).content)
 
     th_elms = root.cssselect("table#proxylisttable thead tr th")
