@@ -3,25 +3,31 @@ from lxml import html
 from Product_Crawler import utils
 import pandas as pd
 import json
+from Product_Crawler.crawl_proxy import ProxyManager
 
 
-def crawl_item_urls(page_url=None):
-    if page_url is None:
-        page_url = "https://www.lazada.vn/ca-phe/?ajax=false&page=1"
+class LazadaCrawler:
 
-    content = requests.get(page_url).content.decode("utf-8")
-    print("Page url : ", page_url)
-    print(content)
-    data = json.loads(content)
-    items = data["mods"]["listItems"]
-    item_urls, item_ids = [], []
-    for item in items:
-        item_urls.append(item["productUrl"])
-        item_ids.append(item["itemId"])
+    def __init__(self):
+        self.pm = ProxyManager(proxies_path="../Proxy/proxy_list.txt")
 
-    page_id = page_url[page_url.rfind("page=") + 5:]
-    utils.save_list(item_ids, "./Data/Lazada/itemId_page{}.txt".format(page_id))
-    return item_urls
+    def crawl_item_urls(self, page_url=None):
+        if page_url is None:
+            page_url = "https://www.lazada.vn/ca-phe/?ajax=false&page=1"
+
+        content = self.pm.get_response(page_url).content.decode("utf-8")
+        print("Page url : ", page_url)
+        # print(content)
+        data = json.loads(content)
+        items = data["mods"]["listItems"]
+        item_urls, item_ids = [], []
+        for item in items:
+            item_urls.append(item["productUrl"])
+            item_ids.append(item["itemId"])
+
+        page_id = page_url[page_url.rfind("page=") + 5:]
+        utils.save_list(item_ids, "./Data/Lazada/itemId_page{}.txt".format(page_id))
+        return item_urls
 
 
 if __name__ == "__main__":
@@ -40,7 +46,14 @@ if __name__ == "__main__":
     # save_path = "./Data/Lazada/temp"
     # utils.save_list(unique_item_urls, save_path)
 
-    page_url_fmt = "https://www.lazada.vn/ca-phe/?ajax=false&page={}"
-    c1 = crawl_item_urls(page_url_fmt.format(1))
-    c2 = crawl_item_urls(page_url_fmt.format(2))
+    page_url_fmt = "https://www.lazada.vn/thuc-uong-co-con/?page={}"
+    lc = LazadaCrawler()
+    urls1 = lc.crawl_item_urls(page_url_fmt.format(2))
+    urls2 = lc.crawl_item_urls(page_url_fmt.format(4))
 
+    num_common_urls = 0
+    for url in urls1:
+        if url in urls2:
+            num_common_urls += 1
+
+    print("Num urls1: {}, Num urls2: {}, Num common urls: {}".format(len(urls1), len(urls2), num_common_urls))

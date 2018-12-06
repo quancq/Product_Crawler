@@ -119,7 +119,7 @@ class ProxyManager:
 
             yield {scheme: proxy}
 
-    def get_response(self, url):
+    def get_response(self, url, timeout=3):
         random.shuffle(self.proxies)
         test_url = "https://httpbin.org/ip"
         sess = requests.Session()
@@ -127,7 +127,7 @@ class ProxyManager:
             try:
                 print("Searching valid proxy ...")
                 sess.proxies = proxy
-                sess.get(test_url)
+                sess.get(test_url, timeout=timeout)
                 response = sess.get(url, proxies=proxy)
                 print("Found valid proxy !")
                 return response

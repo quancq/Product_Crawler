@@ -155,6 +155,7 @@ class SendoCrawler:
         exec_time = time.time() - start_time
         print("Correct category urls done. Time : {:.2f} seconds".format(exec_time))
 
+
 def load_category_map(category_path="./Data/Sendo/sendo_category.csv", key="Category url"):
     df = utils.load_csv(category_path)
     if key not in df.columns:

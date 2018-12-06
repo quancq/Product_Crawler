@@ -10,7 +10,6 @@ class ProductSpider(scrapy.Spider):
         self.page_per_category_limit = utils.get_crawl_limit_setting(name)
         self.item_scraped_count = 0
         self.pm = ProxyManager(update=True)
-        self.pm.save_proxies(mode="au")
 
     def parse(self, response):
         raise NotImplementedError()
@@ -28,9 +27,10 @@ class ProductSpider(scrapy.Spider):
     #         self.logger.debug("Exception when parse time_str : ", time_str)
     #         return ""
 
-    def get_response(self, url):
-        res = self.pm.get_response(url)
+    def get_response(self, url, timeout=1):
+        res = self.pm.get_response(url, timeout=timeout)
         if res is None:
             res = requests.get(url)
+            print("Send direct request from my ip !")
 
         return res
