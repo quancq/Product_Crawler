@@ -40,8 +40,14 @@ def mkdirs(dir):
 
 
 def load_json(path):
-    with open(path, 'r') as f:
-        data = json.load(f)
+    data = []
+    try:
+        with open(path, 'r') as f:
+            data = json.load(f)
+        print("Load csv data (size = {}) to {} done".format(len(data), path))
+    except:
+        print("Error when load csv data (size = {}) from P{".format(path))
+
     return data
 
 
@@ -52,6 +58,16 @@ def save_json(data, path):
     with open(path, 'w') as f:
         json.dump(data, f, ensure_ascii=False)
     print("Save json data (size = {}) to {} done".format(len(data), path))
+
+
+def load_csv(path, **kwargs):
+    try:
+        df = pd.read_csv(path, **kwargs)
+        print("Load csv data (size = {}) to {} done".format(df.shape[0], path))
+    except:
+        print("Error when load csv from ", os.path.abspath(path))
+        raise
+    return df
 
 
 def save_csv(df, path, fields=None):
@@ -68,12 +84,11 @@ def save_csv(df, path, fields=None):
 def load_list(path):
     data = []
     try:
-        if os.path.exists(path):
-            with open(path, 'r') as f:
-                data = f.readlines()
-            data = [e.strip() for e in data]
+        with open(path, 'r') as f:
+            data = f.readlines()
+        data = [e.strip() for e in data]
     except:
-        print("Error when load list from ", path)
+        print("Error when load list from ", os.path.abspath(path))
 
     return data
 
@@ -112,3 +127,10 @@ def get_export_format_setting():
 
 def remove_duplicate_whitespaces(str):
     return re.sub("\s+", " ", str)
+
+
+def concatnate_dfs(paths):
+    dfs = [load_csv(path) for path in paths]
+    result = pd.concat(dfs, ignore_index=True)
+
+    return result

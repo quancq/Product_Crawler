@@ -25,12 +25,11 @@ def save_csv(df, path, fields=None):
 def load_list(path):
     data = []
     try:
-        if os.path.exists(path):
-            with open(path, 'r') as f:
-                data = f.readlines()
-            data = [e.strip() for e in data]
+        with open(path, 'r') as f:
+            data = f.readlines()
+        data = [e.strip() for e in data]
     except:
-        print("Error when load list from ", path)
+        print("Error when load list from ", os.path.abspath(path))
 
     return data
 
@@ -52,10 +51,12 @@ def save_list(data, path, mode="w"):
 
 
 class ProxyManager:
-    def __init__(self, proxies_path="./Proxy/proxy_list.txt", proxy_type="https"):
+    def __init__(self, proxies_path="./Proxy/proxy_list.txt", proxy_type="https", update=False):
         self.proxies_path = proxies_path
         self.proxies = []
-        self.update_latest_proxies(proxy_type)
+        self.load_proxies()
+        if update:
+            self.update_latest_proxies(proxy_type)
 
     @staticmethod
     def crawl_latest_proxies(proxy_type="https"):
@@ -103,7 +104,9 @@ class ProxyManager:
 
     def update_latest_proxies(self, proxy_type="https"):
         proxy_df = ProxyManager.crawl_latest_proxies(proxy_type=proxy_type)
-        self.proxies = ProxyManager._extract_proxy_urls(proxy_df)
+        self.proxies.extend(ProxyManager._extract_proxy_urls(proxy_df))
+        self.proxies = list(set(self.proxies))
+        self.save_proxies()
 
         print("Update latest proxies done. Number proxies : ", len(self.proxies))
 
@@ -118,10 +121,15 @@ class ProxyManager:
 
     def get_response(self, url):
         random.shuffle(self.proxies)
-
+        test_url = "https://httpbin.org/ip"
+        sess = requests.Session()
         for proxy in self.generate_proxy_with_scheme():
             try:
-                response = requests.get(url, proxies=proxy)
+                print("Searching valid proxy ...")
+                sess.proxies = proxy
+                sess.get(test_url)
+                response = sess.get(url, proxies=proxy)
+                print("Found valid proxy !")
                 return response
             except:
                 pass

@@ -9,7 +9,8 @@ class ProductSpider(scrapy.Spider):
         super(ProductSpider, self).__init__(name=name, **kwargs)
         self.page_per_category_limit = utils.get_crawl_limit_setting(name)
         self.item_scraped_count = 0
-        self.pm = ProxyManager()
+        self.pm = ProxyManager(update=True)
+        self.pm.save_proxies(mode="au")
 
     def parse(self, response):
         raise NotImplementedError()

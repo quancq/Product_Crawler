@@ -1,5 +1,6 @@
 from scrapy import Request
 from Product_Crawler.spiders.ProductSpider import ProductSpider
+from Product_Crawler.Crawl import crawl_sendo
 from Product_Crawler.items import Product
 from Product_Crawler import utils
 from Product_Crawler.project_settings import DEFAULT_TIME_FORMAT
@@ -14,19 +15,60 @@ class SendoSpider(ProductSpider):
     base_url = "https://www.sendo.vn"
 
     url_category_list = [
-        ("https://www.sendo.vn/sua-va-thuc-pham-tu-sua/", "Sữa và thực phẩm từ sữa")
+        # ("https://www.sendo.vn/sua-va-thuc-pham-tu-sua/", "Sữa và thực phẩm từ sữa"),
+        "https://www.sendo.vn/do-uong/",
+        # ("", ""),
     ]
 
+    def __init__(self):
+        super().__init__(name=self.name)
+        catgory_path = "./Product_Crawler/Crawl/Data/Sendo/sendo_category.csv"
+        self.map_url_category = crawl_sendo.load_category_map(catgory_path, key="Category url")
+        self.map_id_category = crawl_sendo.load_category_map(catgory_path, key="Category id")
+
     def start_requests(self):
-        page_idx = 1
-        for category_url, category in self.url_category_list:
-            meta = {
-                "category": category,
-                "category_url_fmt": category_url + "?p={}",
-                "page_idx": page_idx
-            }
-            category_url = meta["category_url_fmt"].format(meta["page_idx"])
-            yield Request(category_url, self.parse_category, meta=meta, errback=self.errback)
+        # page_idx = 1
+        for category_url in self.url_category_list:
+            # meta = {
+            #     "category": category,
+            #     "category_url_fmt": category_url + "?p={}",
+            #     "page_idx": page_idx
+            # }
+            # category_url = meta["category_url_fmt"].format(meta["page_idx"])
+            # yield Request(category_url, self.parse_category, meta=meta, errback=self.errback)
+            try:
+                category_id = self.map_url_category.get(category_url).get("Category id")
+                num_items = self.map_url_category.get(category_url).get("Number items")
+                self.parse_category_from_id(category_id, num_items)
+            except:
+                print("Error when load category id and number items of category ", category_url)
+
+    def parse_category_from_id(self, category_id, num_items):
+        # Get all item
+        item_urls_fmt = "https://www.sendo.vn/m/wap_v2/category/product?" \
+                "category_id={}&p=1&s={}&sortType=default_listing_desc"
+        all_item_url = item_urls_fmt.format(category_id, num_items)
+        try:
+            json_data = json.loads(self.get_response(all_item_url).content.decode("utf-8"))
+            full_items = json_data["result"]["data"]
+        except:
+            self.logger.error("\nError when all items of cat_id : {}, total_items : {}"
+                              .format(category_id, num_items))
+            return 0
+
+        for full_item in full_items[:7]:
+
+            cat_path = full_item["cat_path"]
+            item_url_key = cat_path.replace(".html/", "")
+            item_url = "https://www.sendo.vn/m/wap_v2/full/san-pham/{}".format(item_url_key)
+
+            url = self.base_url + "/" + cat_path
+            category = self.map_id_category.get(category_id, {}).get("Category name", "")
+            item = dict(category=category, category_id=category_id, url=url,
+                        product_id=full_item["product_id"], model=full_item["name"],
+                        price=full_item["final_price"], seller=full_item["shop_name"])
+            if utils.is_valid_url(item_url):
+                yield Request(item_url, self.parse_item, meta=item, errback=self.errback)
 
     def parse_category(self, response):
         meta = dict(response.meta)
