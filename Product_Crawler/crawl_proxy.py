@@ -1,9 +1,9 @@
-# from Product_Crawler import utils
 from lxml import html
 import requests
 import os
 import pandas as pd
 import random
+import json
 
 
 def mkdirs(dir):
@@ -39,70 +39,16 @@ def save_list(data, path, mode="w"):
     dir = path[:path.rfind("/")]
     mkdirs(dir)
 
-    if mode == "a":
+    if mode == "a" or mode == "au":
         archive_data = load_list(path)
         data.extend(archive_data)
+
+        if mode == "au":
+            data = list(set(data))
 
     with open(path, 'w') as f:
         f.write("\n".join(data))
     print("Save list data (size = {}) to {} done".format(len(data), path))
-
-
-def crawl_latest_proxies():
-    # url = "https://free-proxy-list.net"
-    url = "https://www.sslproxies.org/"
-    root = html.document_fromstring(requests.get(url).content)
-
-    th_elms = root.cssselect("table#proxylisttable thead tr th")
-    columns = [th.text for th in th_elms]
-    print(columns)
-
-    data = []
-
-    tr_elms = root.cssselect("table#proxylisttable tbody tr")
-    for tr in tr_elms:
-        data.append([td.text for td in tr.cssselect("td")])
-
-    print("Crawl {} proxies from {} done".format(len(data), url))
-    return pd.DataFrame(data, columns=columns)
-
-
-def get_proxy_urls(df):
-    proxies = []
-    for idx, row in df.iterrows():
-        scheme = "https" if row["Https"] == "yes" else "http"
-        url = "{}://{}:{}".format(scheme, row["IP Address"], row["Port"])
-        proxies.append(url)
-
-    return proxies
-
-
-def crawl():
-    proxies = crawl_latest_proxies()
-
-    proxy_dir = "./Proxy"
-    proxy_txt_path = os.path.join(proxy_dir, "proxy_list.txt")
-    proxy_csv_path = os.path.join(proxy_dir, "proxies.csv")
-    utils.mkdirs(proxy_dir)
-
-    # proxies.to_csv(os.path.join(proxy_dir, "proxies.csv"), index=False)
-    utils.save_csv(proxies, proxy_csv_path)
-
-    proxy_urls = get_proxy_urls(proxies)
-
-    # Union crawled proxies with archive proxies
-    archive_proxies = utils.load_list(proxy_txt_path)
-    # print("archive: ", archive_proxies)
-    all_proxies = archive_proxies
-
-    for proxy_url in proxy_urls:
-        if proxy_url not in all_proxies:
-            all_proxies.append(proxy_url)
-
-    utils.save_list(all_proxies, path=proxy_txt_path)
-    print(proxies.head())
-
-    # print("\n".join(proxy_urls[:10]))
 
 
 class ProxyManager:
@@ -145,11 +91,15 @@ class ProxyManager:
 
         return proxies
 
-    def load_proxies(self, proxies_path="./Proxy/proxy_list.txt"):
+    def load_proxies(self, proxies_path=None):
+        if proxies_path is None:
+            proxies_path = self.proxies_path
         self.proxies = load_list(proxies_path)
 
-    def save_proxies(self, proxies_path="./Proxy/proxy_list.txt"):
-        save_list(self.proxies, proxies_path)
+    def save_proxies(self, proxies_path=None, mode="au"):
+        if proxies_path is None:
+            proxies_path = self.proxies_path
+        save_list(self.proxies, proxies_path, mode=mode)
 
     def update_latest_proxies(self, proxy_type="https"):
         proxy_df = ProxyManager.crawl_latest_proxies(proxy_type=proxy_type)
@@ -170,9 +120,24 @@ class ProxyManager:
         random.shuffle(self.proxies)
 
         for proxy in self.generate_proxy_with_scheme():
+            try:
+                response = requests.get(url, proxies=proxy)
+                return response
+            except:
+                pass
 
+        return None
+
+
+def test_proxy():
+    pm = ProxyManager()
+    pm.save_proxies(mode="au")
+
+    url = "https://httpbin.org/ip"
+    res = pm.get_response(url)
+    print(json.loads(res.content.decode("utf-8")))
 
 
 if __name__ == "__main__":
     pass
-    # crawl()
+    test_proxy()
