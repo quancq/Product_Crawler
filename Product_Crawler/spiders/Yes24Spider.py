@@ -1,11 +1,9 @@
-import scrapy
 from scrapy import Request
 from Product_Crawler.spiders.ProductSpider import ProductSpider
 from Product_Crawler.items import Product
 from Product_Crawler import utils
 from Product_Crawler.project_settings import DEFAULT_TIME_FORMAT
 from lxml import html
-import requests
 import math
 
 
@@ -20,7 +18,8 @@ class Yes24Spider(ProductSpider):
         # ("https://www.yes24.vn/gia-dung", "Gia dụng"),
         # ("https://www.yes24.vn/dien-may", "Điện máy"),
         # ("https://www.yes24.vn/phu-kien", "Phụ kiện"),
-        ("https://www.yes24.vn/thuc-pham/thuc-pham-chuc-nang-c679630", "Thực phẩm chức năng"),
+        ("https://www.yes24.vn/thuc-pham/thuc-pham-an-uong-c679650", "Thực phẩm ăn uống"),
+        # ("", ""),
         # ("", ""),
     ]
 
@@ -65,12 +64,13 @@ class Yes24Spider(ProductSpider):
         seller_url = intro_div.css(".tr-gn-supplier a::attr(href)").extract_first()
 
         # Crawl seller name
-        root = html.document_fromstring(requests.get(seller_url).content)
-        name_elms = root.cssselect(".tr-pr-name1")
-        if len(name_elms) > 0:
-            seller = name_elms[0].text
-        else:
-            seller = ""
+        seller = ""
+        response = self.pm.get_response(seller_url)
+        if response is not None:
+            root = html.document_fromstring(response.content)
+            name_elms = root.cssselect(".tr-pr-name1")
+            if len(name_elms) > 0:
+                seller = name_elms[0].text
 
         # intro = intro_div.css(".tr-short-content::text").extract()
         # intro = [elm.strip() for elm in intro]
@@ -119,13 +119,12 @@ class Yes24Spider(ProductSpider):
     def errback(self, failure):
         self.logger.error("Error when send requests : ", failure.request)
 
-    @staticmethod
-    def crawl_review(url, raw_html=None):
+    def crawl_review(self, url, raw_html=None):
         # url = "https://www.yes24.vn/Product/GetProductComment?productNo=1714033&page=17"
         if url is None:
             root = html.document_fromstring(raw_html)
         else:
-            res = requests.get(url)
+            res = self.get_response(url)
             res.encoding = "latin-1"
             root = html.document_fromstring(res.content)
 

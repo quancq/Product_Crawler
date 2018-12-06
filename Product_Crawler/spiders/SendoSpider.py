@@ -1,12 +1,9 @@
-import scrapy
 from scrapy import Request
 from Product_Crawler.spiders.ProductSpider import ProductSpider
 from Product_Crawler.items import Product
 from Product_Crawler import utils
 from Product_Crawler.project_settings import DEFAULT_TIME_FORMAT
 from lxml import html
-import requests
-import math
 import re
 import json
 
@@ -64,7 +61,7 @@ class SendoSpider(ProductSpider):
                         "category_id={}&p=1&s={}&sortType=default_listing_desc"
         url = item_urls_fmt.format(category_id, 1)
         try:
-            json_data = json.loads(requests.get(url).content.decode("utf-8"))
+            json_data = json.loads(self.get_response(url).content.decode("utf-8"))
             total_items = json_data["result"]["meta_data"]["total_count"]
         except:
             self.logger.error("\nError when get number items of "
@@ -74,7 +71,7 @@ class SendoSpider(ProductSpider):
         # Get all item
         all_item_url = item_urls_fmt.format(category_id, total_items)
         try:
-            json_data = json.loads(requests.get(all_item_url).content.decode("utf-8"))
+            json_data = json.loads(self.get_response(all_item_url).content.decode("utf-8"))
             full_items = json_data["result"]["data"]
         except:
             self.logger.error("\nError when all items of category {}, cat_id : {}, total_items : {}"
@@ -147,7 +144,7 @@ class SendoSpider(ProductSpider):
         num_ratings = 10
         review_url = "https://www.sendo.vn/m/wap_v2/san-pham/rating/{}?p=1&s={}".format(product_id, num_ratings)
 
-        review_data = json.loads(requests.get(review_url).content.decode("utf-8"))
+        review_data = json.loads(self.get_response(review_url).content.decode("utf-8"))
         full_reviews = review_data["result"]["data"]
 
         reviews = []

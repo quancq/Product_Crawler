@@ -1,12 +1,7 @@
-import scrapy
 from scrapy import Request
 from Product_Crawler.spiders.ProductSpider import ProductSpider
 from Product_Crawler.items import Product
 from Product_Crawler import utils
-from Product_Crawler.project_settings import DEFAULT_TIME_FORMAT
-from lxml import html
-import requests
-import math
 import re
 
 
@@ -51,6 +46,20 @@ class MediamartSpider(ProductSpider):
         # ("https://mediamart.vn/may-chieu/", "Máy chiếu"),
         # ("https://mediamart.vn/may-phat-dien/", "Máy phát điện"),
         # ("https://mediamart.vn/may-loc-nuoc/", "Máy lọc nước"),
+        # ("https://mediamart.vn/may-nghe-nhac/", "Máy nghe nhạc"),
+        # ("https://mediamart.vn/may-loc-khong-khi/", "Máy lọc không khí"),
+        # ("https://mediamart.vn/may-hut-bui/", "Máy hút bụi"),
+        # ("https://mediamart.vn/may-hut-am/", "Máy hút ẩm"),
+        # ("https://mediamart.vn/may-photocopy/", "Máy Photocopy"),
+        # ("https://mediamart.vn/may-hut-khoi-hut-mui/", "Máy hút mùi"),
+        ("https://mediamart.vn/may-xay-sinh-to/", "Máy xay sinh tố"),
+        ("https://mediamart.vn/may-ep-vat-trai-cay/", "Máy ép vắt trái cây"),
+        ("https://mediamart.vn/may-danh-trung/", "Máy đánh trứng"),
+        ("https://mediamart.vn/may-lam-sua-dau-nanh/", "Máy làm sữa đậu nành"),
+        ("https://mediamart.vn/may-lam-sua-chua/", "Máy làm sữa chua"),
+        ("https://mediamart.vn/may-pha-ca-phe/", "Máy pha cà phê"),
+        ("https://mediamart.vn/may-vat-cam/", "Máy vắt cam"),
+        ("https://mediamart.vn/may-xay-thit", "Máy xay thịt"),
         # ("", ""),
     ]
 

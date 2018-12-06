@@ -1,13 +1,9 @@
-import scrapy
 from scrapy import Request
 from Product_Crawler.spiders.ProductSpider import ProductSpider
 from Product_Crawler.items import Product
 from Product_Crawler import utils
-from Product_Crawler.project_settings import DEFAULT_TIME_FORMAT
 from lxml import html
-import requests
-import math
-import json, os
+import json
 import html as h
 
 
@@ -107,7 +103,7 @@ class LazadaSpider(ProductSpider):
                     page_url = "https:" + script[start_index: end_index]
                     break
             if utils.is_valid_url(page_url):
-                res_content = requests.get(page_url).content.decode("raw_unicode_escape")
+                res_content = self.get_response(page_url).content.decode("raw_unicode_escape")
                 sub_str = '"moduleData":{"html"'
                 start_index = res_content.find(sub_str)
                 if start_index >= 0:
@@ -163,13 +159,12 @@ class LazadaSpider(ProductSpider):
     def errback(self, failure):
         self.logger.error("Error when send requests : ", failure.request)
 
-    @staticmethod
-    def crawl_reviews(url):
+    def crawl_reviews(self, url):
         # url = "https://my.lazada.vn/pdp/review/getReviewList?
         # itemId=102463766&pageSize=15&filter=0&sort=0&pageNo=1"
         ratings, reviews = {}, []
         if utils.is_valid_url(url):
-            json_data = json.loads(requests.get(url).content.decode("utf-8"))
+            json_data = json.loads(self.get_response(url).content.decode("utf-8"))
             scores = json_data["model"]["ratings"]["scores"] or []
             ratings = {5-i: rating for i, rating in enumerate(scores)}
 
