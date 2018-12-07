@@ -44,9 +44,9 @@ def load_json(path):
     try:
         with open(path, 'r') as f:
             data = json.load(f)
-        print("Load csv data (size = {}) to {} done".format(len(data), path))
+        print("Load csv data (size = {}) to {} done".format(len(data), os.path.abspath(path)))
     except:
-        print("Error when load csv data (size = {}) from P{".format(path))
+        print("Error when load csv data (size = {}) from P{".format(os.path.abspath(path)))
 
     return data
 
@@ -57,13 +57,13 @@ def save_json(data, path):
 
     with open(path, 'w') as f:
         json.dump(data, f, ensure_ascii=False)
-    print("Save json data (size = {}) to {} done".format(len(data), path))
+    print("Save json data (size = {}) to {} done".format(len(data), os.path.abspath(path)))
 
 
 def load_csv(path, **kwargs):
     try:
         df = pd.read_csv(path, **kwargs)
-        print("Load csv data (size = {}) to {} done".format(df.shape[0], path))
+        print("Load csv data (size = {}) to {} done".format(df.shape[0], os.path.abspath(path)))
     except:
         print("Error when load csv from ", os.path.abspath(path))
         raise
@@ -78,7 +78,7 @@ def save_csv(df, path, fields=None):
     else:
         columns = fields
     df.to_csv(path, index=False, columns=columns)
-    print("Save csv data (size = {}) to {} done".format(df.shape[0], path))
+    print("Save csv data (size = {}) to {} done".format(df.shape[0], os.path.abspath(path)))
 
 
 def load_list(path):
@@ -99,7 +99,16 @@ def save_list(data, path):
 
     with open(path, 'w') as f:
         f.write("\n".join(data))
-    print("Save list data (size = {}) to {} done".format(len(data), path))
+    print("Save list data (size = {}) to {} done".format(len(data), os.path.abspath(path)))
+
+
+def save_str(data, path):
+    dir = path[:path.rfind("/")]
+    mkdirs(dir)
+
+    with open(path, 'w') as f:
+        f.write(data)
+    print("Save str data to {} done".format(len(data), os.path.abspath(path)))
 
 
 def is_valid_url(url):

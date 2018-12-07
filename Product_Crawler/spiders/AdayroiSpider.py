@@ -21,12 +21,25 @@ class AdayroiSpider(ProductSpider):
         # ("https://www.adayroi.com/vang-sua-c3325600172153033", "Váng sữa"),
         # ("https://www.adayroi.com/sua-bot-c624", "Sữa bột"),
         # ("https://www.adayroi.com/sua-tuoi-c618", "Sữa tươi"),
-        ("https://www.adayroi.com/rau-cu-qua-c639", "Rau củ quả"),
-        ("https://www.adayroi.com/do-hop-c664", "Đồ hộp"),
-        ("https://www.adayroi.com/thuc-pham-tuoi-c595", "Thực phẩm tươi"),
-        ("https://www.adayroi.com/keo-c3325600174461076", "Kẹo"),
-        ("https://www.adayroi.com/thuc-pham-an-lien-c671", "Thực phẩm ăn liền"),
-        ("https://www.adayroi.com/banh-c697", "Bánh"),
+        # ("https://www.adayroi.com/rau-cu-qua-c639", "Rau củ quả"),
+        # ("https://www.adayroi.com/do-hop-c664", "Đồ hộp"),
+        # ("https://www.adayroi.com/thuc-pham-tuoi-c595", "Thực phẩm tươi"),
+        # ("https://www.adayroi.com/keo-c3325600174461076", "Kẹo"),
+        # ("https://www.adayroi.com/thuc-pham-an-lien-c671", "Thực phẩm ăn liền"),
+        # ("https://www.adayroi.com/banh-c697", "Bánh"),
+        # ("https://www.adayroi.com/bia-c1955", "Bia"),
+        # ("https://www.adayroi.com/thuc-uong-co-con-duoi-15-do-c2126", "Đồ uống có cồn dưới 15 độ"),
+        # ("https://www.adayroi.com/tra-c1978", "Trà"),
+        # ("https://www.adayroi.com/ca-phe-c1979", "Cà phê"),
+        # ("https://www.adayroi.com/nuoc-khoang-nuoc-tinh-khiet-c1975", "Nước khoáng, nước tinh khiết"),
+        # ("https://www.adayroi.com/siro-c1976", "Siro"),
+        # ("https://www.adayroi.com/nuoc-trai-cay-c1977", "Nước trái cây"),
+        # ("https://www.adayroi.com/nuoc-ngot-c1974", "Nước ngọt"),
+        # ("https://www.adayroi.com/thuc-uong-bo-duong-c1980", "Đồ uống bổ dưỡng"),
+        # ("https://www.adayroi.com/thuc-uong-khac-c1981", "Đồ uống khác"),
+        # ("https://www.adayroi.com/ngu-coc-c685", "Ngũ cốc"),
+        # ("https://www.adayroi.com/do-an-vat-c707", "Đồ ăn vặt"),
+        # ("", ""),
         # ("", ""),
     ]
 
@@ -49,6 +62,9 @@ class AdayroiSpider(ProductSpider):
 
         # Navigate to item
         item_urls = response.css("div.product-item a.product-item__thumbnail::attr(href)").extract()
+
+        if len(item_urls) == 0:
+            utils.save_str(response.text, "./Temp/adayroi_empty_category.html")
 
         self.logger.info("Parse url {}, Num item urls : {}".format(response.url, len(item_urls)))
         for item_url in item_urls:
