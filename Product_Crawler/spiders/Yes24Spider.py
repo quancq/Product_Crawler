@@ -23,6 +23,9 @@ class Yes24Spider(ProductSpider):
         # ("", ""),
     ]
 
+    def __init__(self):
+        super().__init__(name=self.name)
+
     def start_requests(self):
         page_idx = 1
         for category_url, category in self.url_category_list:
@@ -99,8 +102,7 @@ class Yes24Spider(ProductSpider):
             reviews.extend(self.crawl_review(url))
 
         self.item_scraped_count += 1
-        if self.item_scraped_count % 100 == 0:
-            self.logger.info("Spider {}: Crawl {} items".format(self.name, self.item_scraped_count))
+        self.print_num_scraped_items(every=20)
 
         yield Product(
             domain=self.allowed_domains[0],

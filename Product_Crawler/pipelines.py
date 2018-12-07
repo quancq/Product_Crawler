@@ -63,7 +63,7 @@ class SaveFilePipeline(object):
                 product_id, brand = item.get("product_id", ""), item.get("brand", "")
                 category, model = item.get("category", ""), item.get("model", "")
                 price, seller = item.get("price", ""), item.get("seller", "")
-                info, tags = item.get("info", ""), item.get("tag", "")
+                info, tags = item.get("info", ""), item.get("tags", "")
                 others = json.dumps(item.get("others", ""))
 
                 items_df.append((domain, url, product_id, brand, category,

@@ -60,8 +60,17 @@ class MediamartSpider(ProductSpider):
         # ("https://mediamart.vn/may-pha-ca-phe/", "Máy pha cà phê"),
         # ("https://mediamart.vn/may-vat-cam/", "Máy vắt cam"),
         # ("https://mediamart.vn/may-xay-thit", "Máy xay thịt"),
+        ("https://mediamart.vn/quatsuoi/", "Quạt sưởi"),
+        ("https://mediamart.vn/quat-dieu-hoa/", "Quạt điều hòa"),
+        ("https://mediamart.vn/quat/", "Quạt"),
+        ("https://mediamart.vn/ban-la/", "Bàn là"),
+        ("https://mediamart.vn/cssk/?loc=may-cao-rau", "Máy cạo râu"),
+        # ("", ""),
         # ("", ""),
     ]
+
+    def __init__(self):
+        super().__init__(name=self.name)
 
     def start_requests(self):
         page_idx = 1
@@ -122,8 +131,7 @@ class MediamartSpider(ProductSpider):
         info = intro + ". " + info
 
         self.item_scraped_count += 1
-        if self.item_scraped_count % 100 == 0:
-            self.logger.info("Spider {}: Crawl {} items".format(self.name, self.item_scraped_count))
+        self.print_num_scraped_items(every=20)
 
         yield Product(
             domain=self.allowed_domains[0],

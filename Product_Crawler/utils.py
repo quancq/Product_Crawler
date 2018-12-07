@@ -134,3 +134,8 @@ def concatnate_dfs(paths):
     result = pd.concat(dfs, ignore_index=True)
 
     return result
+
+
+def sleep(time_sleep=2):
+    print("Sleep ...")
+    time.sleep(time_sleep)

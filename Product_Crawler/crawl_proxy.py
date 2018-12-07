@@ -101,6 +101,7 @@ class ProxyManager:
         if proxies_path is None:
             proxies_path = self.proxies_path
         save_list(self.proxies, proxies_path, mode=mode)
+        print("Save {} proxies to {} done".format(len(self.proxies), os.path.abspath(self.proxies_path)))
 
     def update_latest_proxies(self, proxy_type="https"):
         proxy_df = ProxyManager.crawl_latest_proxies(proxy_type=proxy_type)

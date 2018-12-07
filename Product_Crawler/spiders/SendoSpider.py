@@ -17,12 +17,25 @@ class SendoSpider(ProductSpider):
 
     url_category_list = [
         # ("https://www.sendo.vn/sua-va-thuc-pham-tu-sua/", "Sữa và thực phẩm từ sữa"),
-        ("https://www.sendo.vn/do-uong/", "Đồ uống"),
+        # ("https://www.sendo.vn/do-uong/", "Đồ uống"),
+        # ("https://www.sendo.vn/sua-bot/", "Sữa bột"),
+        # ("https://www.sendo.vn/sua-va-thuc-pham-tu-sua-khac/", "Sữa và thực phẩm từ sữa khác"),
+        # ("https://www.sendo.vn/sua-cho-nguoi-an-kieng/", "Sữa cho người ăn kiêng"),
+        # ("https://www.sendo.vn/vang-sua/", "Váng sữa"),
+        # ("https://www.sendo.vn/pho-mai/", "Phô mai"),
+        # ("https://www.sendo.vn/sua-chua/", "Sữa chua"),
+        # ("https://www.sendo.vn/bo/", "Bơ"),
+        # ("https://www.sendo.vn/keo/", "Kẹo"),
+        # ("https://www.sendo.vn/mi-pho-chao-an-lien/", "Mì phở cháo ăn liền"),
+        # ("https://www.sendo.vn/rau-cu-qua-say-kho/", "Rau củ quả sấy khô"),
+        # ("https://www.sendo.vn/ngu-coc-bot/", "Ngũ cốc"),
+        # ("https://www.sendo.vn/banh-mut", "Bánh mứt"),
+        ("https://www.sendo.vn/van-phong-pham/", ""),
         # ("", ""),
     ]
 
-    # def __init__(self):
-    #     super().__init__(name=self.name)
+    def __init__(self):
+        super().__init__(name=self.name)
     #     catgory_path = "./Product_Crawler/Crawl/Data/Sendo/sendo_category.csv"
     #     self.map_url_category = crawl_sendo.load_category_map(catgory_path, key="Category url")
     #     self.map_id_category = crawl_sendo.load_category_map(catgory_path, key="Category id")
@@ -30,12 +43,15 @@ class SendoSpider(ProductSpider):
     def start_requests(self):
         page_idx = 1
         for category_url, category in self.url_category_list:
+            category_id = self.get_category_id(category_url)
             meta = {
                 "category": category,
-                "category_url_fmt": category_url + "?p={}",
+                "category_id": category_id,
+                "category_url_fmt": "https://www.sendo.vn/m/wap_v2/category/product?"
+                                    "category_id={}&p={}&s=100&sortType=default_listing_desc",
                 "page_idx": page_idx
             }
-            category_url = meta["category_url_fmt"].format(meta["page_idx"])
+            category_url = meta["category_url_fmt"].format(meta["category_id"], meta["page_idx"])
             yield Request(category_url, self.parse_category, meta=meta, errback=self.errback)
 
     def parse_category_from_id(self, category_id, num_items):
@@ -66,17 +82,18 @@ class SendoSpider(ProductSpider):
             if utils.is_valid_url(item_url):
                 yield Request(item_url, self.parse_item, meta=item, errback=self.errback)
 
-    def parse_category(self, response):
-        meta = dict(response.meta)
-
+    def get_category_id(self, category_url):
         # Get category id
-        scripts = response.css("script").extract()
+        response = self.get_response(category_url)
+        root = html.document_fromstring(response.content.decode("utf-8"))
+        scripts = root.cssselect("script")
         pre = "window.__INITIAL_STATE__="
         post = "</script>"
         str_data = None
         for script in scripts:
-            if pre in script:
-                str_data = script
+            text = script.text_content()
+            if pre in text:
+                str_data = text
                 break
 
         if str_data is None:
@@ -91,31 +108,62 @@ class SendoSpider(ProductSpider):
             category_id = json_data["data"]["ListingInfo"]["active"]["data"]["categoryId"]
 
         except:
-            self.logger.error("\nError when parse json data to get category id of ", meta["category"])
+            self.logger.error("\nError when parse json data to get category id of ", category_url)
             return 0
+
+        return category_id
+
+    def parse_category(self, response):
+        meta = dict(response.meta)
+
+        # # Get category id
+        # scripts = response.css("script").extract()
+        # pre = "window.__INITIAL_STATE__="
+        # post = "</script>"
+        # str_data = None
+        # for script in scripts:
+        #     if pre in script:
+        #         str_data = script
+        #         break
+        #
+        # if str_data is None:
+        #     return 0
+        #
+        # start_index = str_data.find(pre) + len(pre)
+        # end_index = str_data.find(post, start_index)
+        # str_data = str_data[start_index: end_index]
+        #
+        # try:
+        #     json_data = json.loads(str_data)
+        #     category_id = json_data["data"]["ListingInfo"]["active"]["data"]["categoryId"]
+        #
+        # except:
+        #     self.logger.error("\nError when parse json data to get category id of ", meta["category"])
+        #     return 0
 
         # Get total items of category
-        item_urls_fmt = "https://www.sendo.vn/m/wap_v2/category/product?" \
-                        "category_id={}&p={}&s={}&sortType=default_listing_desc"
-        page_id = random.randint(1, 6)
-        url = item_urls_fmt.format(category_id, page_id, 5)
-        try:
-            json_data = json.loads(self.get_response(url).content.decode("utf-8"))
-            total_items = json_data["result"]["meta_data"]["total_count"]
-        except:
-            self.logger.error("\nError when get number items of "
-                              "category {}, cat_id : {}".format(meta["category"], category_id))
-            return 0
+        # item_urls_fmt = "https://www.sendo.vn/m/wap_v2/category/product?" \
+        #                 "category_id={}&p={}&s={}&sortType=default_listing_desc"
+        # page_id = random.randint(1, 6)
+        # url = item_urls_fmt.format(category_id, page_id, 5)
+        # try:
+        #     json_data = json.loads(self.get_response(url).content.decode("utf-8"))
+        #     total_items = json_data["result"]["meta_data"]["total_count"]
+        # except:
+        #     self.logger.error("\nError when get number items of "
+        #                       "category {}, cat_id : {}".format(meta["category"], category_id))
+        #     return 0
 
         # Get all item
-        total_items = 100
-        all_item_url = item_urls_fmt.format(category_id, 1, total_items)
+        # total_items = 500
+        # all_item_url = item_urls_fmt.format(category_id, 1, total_items)
         try:
-            json_data = json.loads(self.get_response(all_item_url).content.decode("utf-8"))
+            # json_data = json.loads(self.get_response(all_item_url).content.decode("utf-8"))
+            json_data = json.loads(response.text)
             full_items = json_data["result"]["data"]
         except:
-            self.logger.error("\nError when all items of category {}, cat_id : {}, total_items : {}"
-                              .format(meta["category"], category_id, total_items))
+            self.logger.error("\nError when all items of category {}, cat_id : {}"
+                              .format(meta["category"], meta["category_id"]))
             return 0
 
         self.logger.info("Parse url {}, Num item urls : {}".format(response.url, len(full_items)))
@@ -126,12 +174,18 @@ class SendoSpider(ProductSpider):
             item_url = "https://www.sendo.vn/m/wap_v2/full/san-pham/{}".format(item_url_key)
 
             url = self.base_url + "/" + cat_path
-            item = dict(category=meta["category"], category_id=category_id, url=url,
+            item = dict(category=meta["category"], category_id=meta["category_id"], url=url,
                         product_id=full_item["product_id"], model=full_item["name"],
                         price=full_item["final_price"], seller=full_item["shop_name"])
 
             if utils.is_valid_url(item_url):
                 yield Request(item_url, self.parse_item, meta=item, errback=self.errback)
+
+        # Navigate to next page
+        if meta["page_idx"] < self.page_per_category_limit and len(full_items) > 0:
+            meta["page_idx"] += 1
+            next_page = meta["category_url_fmt"].format(meta["category_id"], meta["page_idx"])
+            yield Request(next_page, self.parse_category, meta=meta, errback=self.errback)
 
     def parse_item(self, response):
         meta = response.meta
@@ -144,11 +198,15 @@ class SendoSpider(ProductSpider):
 
         json_data = json.loads(response.text)
         items_data = json_data["result"]["data"]
-        description = items_data["description"]
-        root = html.document_fromstring(description)
 
-        info = root.text_content()
-        info = re.sub("\s+", " ", info)
+        try:
+            description = items_data["description"]
+            root = html.document_fromstring(description)
+
+            info = root.text_content()
+            info = re.sub("\s+", " ", info)
+        except:
+            info = ""
 
         try:
             brand = items_data["brand_info"].get("name", "")
@@ -177,7 +235,10 @@ class SendoSpider(ProductSpider):
 
         tags = json_data.get("keywords", "")
 
-        ratings = {r: items_data["rating_info"].get("star{}".format(r), 0) for r in range(1, 6)}
+        try:
+            ratings = {r: items_data["rating_info"].get("star{}".format(r), 0) for r in range(1, 6)}
+        except:
+            ratings = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
 
         # Crawl reviews of product
         num_ratings = items_data["rating_info"].get("total_rated", 0)
@@ -196,8 +257,7 @@ class SendoSpider(ProductSpider):
             reviews.append(dict(rating=rating, comment=comment, review_time=review_time))
 
         self.item_scraped_count += 1
-        if self.item_scraped_count % 100 == 0:
-            self.logger.info("Spider {}: Crawl {} items".format(self.name, self.item_scraped_count))
+        self.print_num_scraped_items(every=20)
 
         yield Product(
             domain=self.allowed_domains[0],

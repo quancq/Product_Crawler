@@ -2,6 +2,8 @@ import scrapy
 from Product_Crawler import utils
 from Product_Crawler.crawl_proxy import ProxyManager
 import requests
+import random
+import time
 
 
 class ProductSpider(scrapy.Spider):
@@ -9,7 +11,7 @@ class ProductSpider(scrapy.Spider):
         super(ProductSpider, self).__init__(name=name, **kwargs)
         self.page_per_category_limit = utils.get_crawl_limit_setting(name)
         self.item_scraped_count = 0
-        self.pm = ProxyManager(update=True)
+        self.pm = ProxyManager(proxies_path="./ProductCrawler/Proxy/proxy_list.txt", update=True)
 
     def parse(self, response):
         raise NotImplementedError()
@@ -27,10 +29,22 @@ class ProductSpider(scrapy.Spider):
     #         self.logger.debug("Exception when parse time_str : ", time_str)
     #         return ""
 
-    def get_response(self, url, timeout=1):
-        res = self.pm.get_response(url, timeout=timeout)
-        if res is None:
+    def print_num_scraped_items(self, every=50):
+        if self.item_scraped_count % every == 0:
+            self.logger.info("\nSpider {}: Crawl {} items\n".format(self.name, self.item_scraped_count))
+
+    def get_response(self, url, timeout=1.5):
+
+        x = random.randint(1, 11)
+        if x <= 5:
+            print("Sleeping ... to send direct request from my ip ! ...")
+            time_sleep = random.random() * 3 + 0.2
+            time.sleep(time_sleep)
             res = requests.get(url)
-            print("Send direct request from my ip !")
+        else:
+            res = self.pm.get_response(url, timeout=timeout)
+            if res is None:
+                res = requests.get(url)
+                print("Send direct request from my ip !")
 
         return res
