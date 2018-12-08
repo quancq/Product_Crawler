@@ -39,7 +39,8 @@ class AdayroiSpider(ProductSpider):
         # ("https://www.adayroi.com/thuc-uong-khac-c1981", "Đồ uống khác"),
         # ("https://www.adayroi.com/ngu-coc-c685", "Ngũ cốc"),
         # ("https://www.adayroi.com/do-an-vat-c707", "Đồ ăn vặt"),
-        # ("", ""),
+        # ("https://www.adayroi.com/hoa-pham-chat-tay-c954", "Hóa phẩm, chất tẩy"),
+        ("https://www.adayroi.com/giay-san-pham-ve-giay-c942", "Giấy, sản phẩm về giấy"),
         # ("", ""),
     ]
 
