@@ -45,9 +45,16 @@ class AdayroiSpider(ProductSpider):
         # ("https://www.adayroi.com/kem-danh-rang-c245", "Kem đánh răng"),
         # ("https://www.adayroi.com/cham-soc-co-the-c211", "Chăm sóc cơ thể"),
         # ("https://www.adayroi.com/dung-cu-trang-diem-lam-dep-c163", "Dụng cụ trang điểm làm đẹp"),
-        ("https://www.adayroi.com/cham-soc-da-mat-c173", "Chăm sóc da mặt"),
+        # ("https://www.adayroi.com/cham-soc-da-mat-c173", "Chăm sóc da mặt"),
         # ("https://www.adayroi.com/nuoc-hoa-c169", "Nước hoa"),
         # ("https://www.adayroi.com/van-phong-pham-c1428", "Văn phòng phẩm"),
+        # ("https://www.adayroi.com/o-to-c1806", "Ô tô"),
+        # ("https://www.adayroi.com/phu-kien-xe-may-c1094", "Phụ kiện xe máy"),
+        # ("https://www.adayroi.com/xe-dap-c1225", "Xe đạp"),
+        # ("https://www.adayroi.com/phu-kien-xe-dap-c1234", "Phụ kiện xe đạp"),
+        # ("https://www.adayroi.com/xe-con-tay-c1812", "Xe máy"),
+        # ("https://www.adayroi.com/xe-tay-ga-c1811", "Xe máy"),
+        # ("https://www.adayroi.com/xe-so-c1810", "Xe máy"),
         # ("", ""),
     ]
 
