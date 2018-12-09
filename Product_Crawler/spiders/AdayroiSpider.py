@@ -56,6 +56,14 @@ class AdayroiSpider(ProductSpider):
         # ("https://www.adayroi.com/xe-tay-ga-c1811", "Xe máy"),
         # ("https://www.adayroi.com/xe-so-c1810", "Xe máy"),
         # ("https://www.adayroi.com/vat-dung-nha-bep-phong-an-c863", "Vật dụng nhà bếp"),
+        # ("https://www.adayroi.com/resort-c3325600280040", "Resort"),
+        # ("https://www.adayroi.com/khach-san-c332560", "Khách sạn"),
+        # ("https://www.adayroi.com/nha-hang-c332567", "Nhà hàng"),
+        # ("https://www.adayroi.com/buffet-c332566", "Buffet"),
+        # ("https://www.adayroi.com/spa-lam-dep-c332552", "Spa làm đẹp"),
+        # ("https://www.adayroi.com/cafe-kem-banh-c332569", "Cafe kem bánh"),
+        # ("https://www.adayroi.com/tour-du-lich-c332561", "Tour du lịch"),
+        # ("", ""),
         # ("", ""),
     ]
 
@@ -63,7 +71,7 @@ class AdayroiSpider(ProductSpider):
         super().__init__(name=self.name)
 
     def start_requests(self):
-        page_idx = 20
+        page_idx = 0
         for category_url, category in self.url_category_list:
             meta = {
                 "category": category,
