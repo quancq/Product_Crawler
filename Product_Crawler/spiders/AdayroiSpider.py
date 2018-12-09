@@ -63,7 +63,8 @@ class AdayroiSpider(ProductSpider):
         # ("https://www.adayroi.com/spa-lam-dep-c332552", "Spa làm đẹp"),
         # ("https://www.adayroi.com/cafe-kem-banh-c332569", "Cafe kem bánh"),
         # ("https://www.adayroi.com/tour-du-lich-c332561", "Tour du lịch"),
-        # ("", ""),
+        # ("https://www.adayroi.com/dong-ho-c3325600459779048", "Đồng hồ"),
+        ("https://www.adayroi.com/trang-suc-c3325600459779147", "Trang sức"),
         # ("", ""),
     ]
 
