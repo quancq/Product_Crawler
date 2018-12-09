@@ -55,6 +55,7 @@ class AdayroiSpider(ProductSpider):
         # ("https://www.adayroi.com/xe-con-tay-c1812", "Xe máy"),
         # ("https://www.adayroi.com/xe-tay-ga-c1811", "Xe máy"),
         # ("https://www.adayroi.com/xe-so-c1810", "Xe máy"),
+        # ("https://www.adayroi.com/vat-dung-nha-bep-phong-an-c863", "Vật dụng nhà bếp"),
         # ("", ""),
     ]
 
@@ -62,7 +63,7 @@ class AdayroiSpider(ProductSpider):
         super().__init__(name=self.name)
 
     def start_requests(self):
-        page_idx = 0
+        page_idx = 20
         for category_url, category in self.url_category_list:
             meta = {
                 "category": category,
