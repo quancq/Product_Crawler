@@ -64,7 +64,11 @@ class AdayroiSpider(ProductSpider):
         # ("https://www.adayroi.com/cafe-kem-banh-c332569", "Cafe kem bánh"),
         # ("https://www.adayroi.com/tour-du-lich-c332561", "Tour du lịch"),
         # ("https://www.adayroi.com/dong-ho-c3325600459779048", "Đồng hồ"),
-        ("https://www.adayroi.com/trang-suc-c3325600459779147", "Trang sức"),
+        # ("https://www.adayroi.com/trang-suc-c3325600459779147", "Trang sức"),
+        # ("https://www.adayroi.com/giay-nam-c104", "Giày nam"),
+        # ("https://www.adayroi.com/dep-nam-c105", "Dép nam"),
+        # ("https://www.adayroi.com/dep-nu-c57", "Dép nữ"),
+        ("https://www.adayroi.com/giay-nu-c46", "Giày nữ"),
         # ("", ""),
     ]
 
