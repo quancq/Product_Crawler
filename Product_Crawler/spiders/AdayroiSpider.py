@@ -68,7 +68,7 @@ class AdayroiSpider(ProductSpider):
         # ("https://www.adayroi.com/giay-nam-c104", "Giày nam"),
         # ("https://www.adayroi.com/dep-nam-c105", "Dép nam"),
         # ("https://www.adayroi.com/dep-nu-c57", "Dép nữ"),
-        ("https://www.adayroi.com/giay-nu-c46", "Giày nữ"),
+        # ("https://www.adayroi.com/giay-nu-c46", "Giày nữ"),
         # ("", ""),
     ]
 

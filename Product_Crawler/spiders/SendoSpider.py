@@ -30,7 +30,9 @@ class SendoSpider(ProductSpider):
         # ("https://www.sendo.vn/rau-cu-qua-say-kho/", "Rau củ quả sấy khô"),
         # ("https://www.sendo.vn/ngu-coc-bot/", "Ngũ cốc"),
         # ("https://www.sendo.vn/banh-mut", "Bánh mứt"),
-        ("https://www.sendo.vn/van-phong-pham/", ""),
+        # ("https://www.sendo.vn/van-phong-pham/", ""),
+        ("https://www.sendo.vn/thiet-bi-di-dong/", "Điện thoại di động"),
+        # ("", ""),
         # ("", ""),
     ]
 
@@ -189,12 +191,7 @@ class SendoSpider(ProductSpider):
 
     def parse_item(self, response):
         meta = response.meta
-        url = meta["url"]
-        category = meta["category"]
         product_id = meta["product_id"]
-        model = meta["model"]
-        seller = meta["seller"]
-        price = meta["price"]
 
         json_data = json.loads(response.text)
         items_data = json_data["result"]["data"]
@@ -240,11 +237,22 @@ class SendoSpider(ProductSpider):
         except:
             ratings = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
 
+        # Add new scraped data
+        meta.update({
+            "info": info,
+            "brand": brand,
+            "others": others,
+            "ratings": ratings,
+            "tags": tags
+        })
+
         # Crawl reviews of product
         num_ratings = items_data["rating_info"].get("total_rated", 0)
         review_url = "https://www.sendo.vn/m/wap_v2/san-pham/rating/{}?p=1&s={}".format(product_id, num_ratings)
+        yield Request(review_url, self.parse_reviews, meta=meta, errback=self.errback)
 
-        review_data = json.loads(self.get_response(review_url).content.decode("utf-8"))
+    def parse_reviews(self, response):
+        review_data = json.loads(response.text)
         full_reviews = review_data["result"]["data"]
 
         reviews = []
@@ -252,27 +260,29 @@ class SendoSpider(ProductSpider):
             rating = full_review["star"]
             comment = full_review["content"]
             review_time = full_review["update_time"]
-            review_time = utils.transform_time_fmt(review_time, src_fmt="%H:%M, %d thg %m, %Y", dst_fmt=DEFAULT_TIME_FORMAT)
+            review_time = utils.transform_time_fmt(review_time, src_fmt="%H:%M, %d thg %m, %Y",
+                                                   dst_fmt=DEFAULT_TIME_FORMAT)
 
             reviews.append(dict(rating=rating, comment=comment, review_time=review_time))
 
         self.item_scraped_count += 1
         self.print_num_scraped_items(every=20)
 
+        meta = response.meta
         yield Product(
             domain=self.allowed_domains[0],
-            product_id=product_id,
-            url=url,
-            brand=brand,
-            category=category,
-            model=model,
-            info=info,
-            tags=tags,
-            price=price,
-            seller=seller,
+            product_id=meta["product_id"],
+            url=meta["url"],
+            brand=meta["brand"],
+            category=meta["category"],
+            model=meta["model"],
+            info=meta["info"],
+            tags=meta["tags"],
+            price=meta["price"],
+            seller=meta["seller"],
             reviews=reviews,
-            ratings=ratings,
-            others=others
+            ratings=meta["ratings"],
+            others=meta["others"]
         )
 
     def errback(self, failure):
