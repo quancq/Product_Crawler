@@ -69,6 +69,12 @@ class AdayroiSpider(ProductSpider):
         # ("https://www.adayroi.com/dep-nam-c105", "Dép nam"),
         # ("https://www.adayroi.com/dep-nu-c57", "Dép nữ"),
         # ("https://www.adayroi.com/giay-nu-c46", "Giày nữ"),
+        # ("https://www.adayroi.com/dien-thoai-c323", "Điện thoại di động"),
+        # ("https://www.adayroi.com/may-tinh-bang-c328", "Máy tính bảng"),
+        # ("https://www.adayroi.com/tivi-c399", "Tivi"),
+        # ("https://www.adayroi.com/tu-lanh-tu-dong-tu-mat-tu-ruou-c477", "Tủ lạnh, tủ đông, tủ mát"),
+        # ("https://www.adayroi.com/may-giat-may-say-c489", "Máy giặt, máy sấy"),
+        # ("https://www.adayroi.com/dieu-hoa-may-lanh-c464", "Điều hòa"),
         # ("", ""),
     ]
 
