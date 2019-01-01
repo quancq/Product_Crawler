@@ -1,6 +1,6 @@
 CRAWL_LIMIT = {
     "Yes24": 2,
-    "Lazada": 2,
+    "Lazada": 3,
     "Mediamart": -1,
     "Sendo": 5,
     "Adayroi": 20,
