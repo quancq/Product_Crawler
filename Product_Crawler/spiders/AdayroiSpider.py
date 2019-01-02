@@ -81,6 +81,7 @@ class AdayroiSpider(ProductSpider):
         # ("https://www.adayroi.com/camera-hanh-trinh-c1848", "Camera hành trình"),
         # ("https://www.adayroi.com/ong-nhom-kinh-thien-van-c412", "Ống nhòm"),
         # ("https://www.adayroi.com/linh-phu-kien-may-anh-c416", "Linh phụ kiện máy ảnh"),
+        # ("https://www.adayroi.com/thiet-bi-am-thanh-c430", "Thiết bị âm thanh"),
         # ("", ""),
     ]
 
