@@ -94,6 +94,21 @@ class AdayroiSpider(ProductSpider):
         # ("https://www.adayroi.com/may-hut-am-c332560098716005", "Máy hút ẩm"),
         # ("https://www.adayroi.com/may-phun-suong-tao-am-c332560098716004", "Máy phun sương, tạo ẩm"),
         # ("https://www.adayroi.com/thiet-bi-dien-khac-c1477", "Thiết bị điện khác"),
+        # ("https://www.adayroi.com/lo-vi-nuong-lo-vi-song-c898", "Lò, Vỉ nướng, Lò vi sóng"),
+        # ("https://www.adayroi.com/binh-sieu-toc-am-sieu-toc-c904", "Ấm siêu tốc"),
+        # ("https://www.adayroi.com/binh-thuy-dien-c905", "Bình thủy điện"),
+        # ("https://www.adayroi.com/cay-nuoc-nong-lanh-c907", "Cây nước nóng lạnh"),
+        # ("https://www.adayroi.com/may-rua-chen-bat-c33256009163017", "Máy rửa chén bát"),
+        # ("https://www.adayroi.com/may-xay-may-pha-ca-phe-c925", "Máy xay, Máy pha cà phê"),
+        # ("https://www.adayroi.com/may-hut-mui-may-hut-khoi-c929", "Máy hút mùi, Máy hút khói"),
+        # ("https://www.adayroi.com/bep-hong-ngoai-c1472", "Bếp hồng ngoại"),
+        # ("https://www.adayroi.com/bep-tu-c910", "Bếp từ"),
+        # ("https://www.adayroi.com/bep-dien-tu-c909", "Bếp từ"),
+        # ("https://www.adayroi.com/noi-chao-dien-c919", ""),
+        # ("https://www.adayroi.com/may-xay-may-ep-trai-cay-c915", ""),
+        # ("https://www.adayroi.com/may-che-bien-thuc-pham-c912", ""),
+        # ("", ""),
+        # ("", ""),
         # ("", ""),
     ]
 
@@ -179,9 +194,27 @@ class AdayroiSpider(ProductSpider):
 
         # Crawl ratings and reviews
         review_url = response.css(".product-comment__list::attr(data-allreviews)").extract_first()
-        review_url = self.base_url + review_url
+        if review_url is not None:
+            review_url = self.base_url + review_url
+            yield Request(review_url, self.parse_reviews, meta=item, errback=self.errback)
+        else:
+            self.item_scraped_count += 1
+            self.print_num_scraped_items(every=20)
 
-        yield Request(review_url, self.parse_reviews, meta=item, errback=self.errback)
+            yield Product(
+                domain=self.allowed_domains[0],
+                product_id=meta["product_id"],
+                url=meta["url"],
+                brand=meta["brand"],
+                category=meta["category"],
+                model=meta["model"],
+                info=meta["info"],
+                price=meta["price"],
+                seller=meta["seller"],
+                tags=meta["tags"],
+                reviews=[],
+                ratings={}
+            )
 
     def parse_reviews(self, response):
         meta = response.meta
