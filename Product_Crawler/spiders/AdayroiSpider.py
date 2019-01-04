@@ -116,7 +116,7 @@ class AdayroiSpider(ProductSpider):
         super().__init__(name=self.name)
 
     def start_requests(self):
-        page_idx = 50
+        page_idx = 100
         for category_url, category in self.url_category_list:
             meta = {
                 "category": category,
@@ -203,15 +203,15 @@ class AdayroiSpider(ProductSpider):
 
             yield Product(
                 domain=self.allowed_domains[0],
-                product_id=meta["product_id"],
-                url=meta["url"],
-                brand=meta["brand"],
-                category=meta["category"],
-                model=meta["model"],
-                info=meta["info"],
-                price=meta["price"],
-                seller=meta["seller"],
-                tags=meta["tags"],
+                product_id=item["product_id"],
+                url=item["url"],
+                brand=item["brand"],
+                category=item["category"],
+                model=item["model"],
+                info=item["info"],
+                price=item["price"],
+                seller=item["seller"],
+                tags=item["tags"],
                 reviews=[],
                 ratings={}
             )
