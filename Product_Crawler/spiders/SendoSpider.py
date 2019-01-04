@@ -31,7 +31,7 @@ class SendoSpider(ProductSpider):
         # ("https://www.sendo.vn/ngu-coc-bot/", "Ngũ cốc"),
         # ("https://www.sendo.vn/banh-mut", "Bánh mứt"),
         # ("https://www.sendo.vn/van-phong-pham/", ""),
-        ("https://www.sendo.vn/thiet-bi-di-dong/", "Điện thoại di động"),
+        # ("https://www.sendo.vn/thiet-bi-di-dong/", "Điện thoại di động"),
         # ("", ""),
         # ("", ""),
     ]

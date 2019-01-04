@@ -107,7 +107,7 @@ class AdayroiSpider(ProductSpider):
         # ("https://www.adayroi.com/noi-chao-dien-c919", "Nồi, chảo điện"),
         # ("https://www.adayroi.com/may-xay-may-ep-trai-cay-c915", "Máy xay, Máy ép trái cây"),
         # ("https://www.adayroi.com/may-che-bien-thuc-pham-c912", "Máy chế biến thực phẩm"),
-        ("https://www.adayroi.com/vat-dung-nha-bep-phong-an-c863", "Vật dụng nhà bếp"),
+        # ("https://www.adayroi.com/vat-dung-nha-bep-phong-an-c863", "Vật dụng nhà bếp"),
         # ("", ""),
         # ("", ""),
     ]
@@ -116,7 +116,7 @@ class AdayroiSpider(ProductSpider):
         super().__init__(name=self.name)
 
     def start_requests(self):
-        page_idx = 100
+        page_idx = 1
         for category_url, category in self.url_category_list:
             meta = {
                 "category": category,
@@ -180,7 +180,7 @@ class AdayroiSpider(ProductSpider):
 
         try:
             info = response.css(".product-detail__description ::text").extract()
-            info = " ".join([elm.replace("\xa0", "") for elm in info])
+            info = " ".join([elm.replace("\xa0", " ") for elm in info])
             info = re.sub("\s+", " ", info)
         except:
             info = ""

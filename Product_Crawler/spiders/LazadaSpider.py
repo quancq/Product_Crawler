@@ -18,7 +18,7 @@ class LazadaSpider(ProductSpider):
         # ("https://www.lazada.vn/dien-thoai-di-dong/", "Điện thoại di động"),
         # ("https://www.lazada.vn/do-an-sang/", "Đồ ăn sáng"),
         # ("https://www.lazada.vn/tivi/", "Tivi"),
-        ("https://www.lazada.vn/laptop", "Laptop"),
+        # ("https://www.lazada.vn/laptop", "Laptop"),
     ]
 
     def __init__(self):
