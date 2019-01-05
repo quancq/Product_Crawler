@@ -16,8 +16,17 @@ class TikiSpider(ProductSpider):
     base_url = "https://tiki.vn"
 
     url_category_list = [
-        ("https://tiki.vn/xe-may/c8597", "Xe máy"),
+        # ("https://tiki.vn/xe-may/c8597", "Xe máy"),
+        # ("https://tiki.vn/thoi-trang-so-sinh/c5188", "Thời trang sơ sinh"),
+        ("https://tiki.vn/thoi-trang-me-bau/c5191", ""),
+        # ("https://tiki.vn/thoi-trang-be-gai/c5189", ""),
+        # ("https://tiki.vn/thoi-trang-be-trai/c5190", ""),
+        # ("https://tiki.vn/phu-kien-cho-be/c5192", ""),
         # ("", ""),
+        # ("https://tiki.vn/dinh-duong-cho-be/c8339", "Dinh dưỡng cho bé"),
+        # ("https://tiki.vn/dinh-duong-cho-me/c10416", ""),
+        # ("https://tiki.vn/ta-bim-cho-be/c2551", ""),
+        # ("https://tiki.vn/do-choi/c5250", ""),
         # ("", ""),
     ]
     # headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 '
