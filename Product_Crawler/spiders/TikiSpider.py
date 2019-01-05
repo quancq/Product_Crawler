@@ -20,13 +20,13 @@ class TikiSpider(ProductSpider):
         # ("https://tiki.vn/thoi-trang-so-sinh/c5188", "Thời trang sơ sinh"),
         # ("https://tiki.vn/thoi-trang-me-bau/c5191", "Thời trang mẹ bầu"),
         # ("https://tiki.vn/phu-kien-cho-be/c5192", "Phụ kiện cho bé"),
-        ("https://tiki.vn/thoi-trang-be-gai/c5189", "Thời trang bé gái"),
+        # ("https://tiki.vn/thoi-trang-be-gai/c5189", "Thời trang bé gái"),
         # ("https://tiki.vn/thoi-trang-be-trai/c5190", "Thời trang bé trai"),
-        # ("", ""),
         # ("https://tiki.vn/dinh-duong-cho-be/c8339", "Dinh dưỡng cho bé"),
-        # ("https://tiki.vn/dinh-duong-cho-me/c10416", ""),
-        # ("https://tiki.vn/ta-bim-cho-be/c2551", ""),
-        # ("https://tiki.vn/do-choi/c5250", ""),
+        # ("https://tiki.vn/dinh-duong-cho-me/c10416", "Dinh dưỡng cho mẹ"),
+        # ("https://tiki.vn/ta-bim-cho-be/c2551", "Tã, Bỉm"),
+        # ("", ""),
+        # ("https://tiki.vn/do-choi/c5250", "Đồ chơi"),
         # ("", ""),
     ]
     # headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 '
