@@ -25,8 +25,9 @@ class TikiSpider(ProductSpider):
         # ("https://tiki.vn/dinh-duong-cho-be/c8339", "Dinh dưỡng cho bé"),
         # ("https://tiki.vn/dinh-duong-cho-me/c10416", "Dinh dưỡng cho mẹ"),
         # ("https://tiki.vn/ta-bim-cho-be/c2551", "Tã, Bỉm"),
-        # ("", ""),
         # ("https://tiki.vn/do-choi/c5250", "Đồ chơi"),
+        ("https://tiki.vn/the-thao-da-ngoai/c1975", "Thể thao"),
+        # ("", ""),
         # ("", ""),
     ]
     # headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 '
