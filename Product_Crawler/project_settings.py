@@ -3,8 +3,8 @@ CRAWL_LIMIT = {
     "Lazada": 3,
     "Mediamart": -1,
     "Sendo": 5,
-    "Adayroi": -1,
-    "Tiki": 30,
+    "Adayroi": 70,
+    "Tiki": 150,
     "default_crawl_limit": None
 }
 
