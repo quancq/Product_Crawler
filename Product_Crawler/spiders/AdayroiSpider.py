@@ -132,7 +132,7 @@ class AdayroiSpider(ProductSpider):
         # ("", ""),
         # ("https://www.adayroi.com/do-lot-nu-c41", "Thời trang nữ"),
         # ("https://www.adayroi.com/do-mac-nha-c1913", "Thời trang nữ"),
-        ("https://www.adayroi.com/dam-c35", "Thời trang nữ"),
+        # ("https://www.adayroi.com/dam-c35", "Thời trang nữ"),
         # ("https://www.adayroi.com/ao-nu-c3", "Thời trang nữ"),
         # ("", ""),
         # ("", ""),
