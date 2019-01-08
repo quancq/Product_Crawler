@@ -32,9 +32,13 @@ class TikiSpider(ProductSpider):
         # ("https://tiki.vn/mu-bao-hiem/c11906", "Mũ bảo hiểm"),
         # ("https://tiki.vn/phu-kien-phu-tung-xe-may/c6061", "Phụ kiện, Phụ tùng xe máy"),
         # ("https://tiki.vn/phu-kien-do-nghe-xe-dap/c11904", "Phụ kiện, Phụ tùng xe đạp"),
+        # ("https://tiki.vn/phu-kien-o-to/c6045", "Phụ kiện, Phụ tùng ô tô"),
         # ("", ""),
-        ("https://tiki.vn/phu-kien-o-to/c6045", "Phụ kiện, Phụ tùng ô tô"),
-        # ("", ""),
+        ("https://tiki.vn/thiet-bi-cham-soc-suc-khoe/c2307", "Thiết bị chăm sóc sức khỏe"),
+        # ("https://tiki.vn/thuc-pham-chuc-nang/c2322", "Thực phẩm chức năng"),
+        # ("https://tiki.vn/ngoai-troi-san-vuon/c2223", "Ngoài trời, sân vườn"),
+        # ("https://tiki.vn/noi-that/c215", "Nội thất"),
+        # ("https://tiki.vn/do-dung-phong-ngu/c8313", "Đồ dùng phòng ngủ"),
         # ("", ""),
         # ("", ""),
     ]
@@ -47,7 +51,7 @@ class TikiSpider(ProductSpider):
         super().__init__(name=self.name)
 
     def start_requests(self):
-        page_idx = 30
+        page_idx = 1
         for category_url, category in self.url_category_list:
             meta = {
                 "category": category,
