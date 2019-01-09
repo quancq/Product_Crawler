@@ -39,11 +39,11 @@ class TikiSpider(ProductSpider):
         # ("https://tiki.vn/dem-ngoi/c23374", "Đệm ngồi"),
         # ("https://tiki.vn/nem-va-phu-kien/c6723", "Nệm và phụ kiện"),
         # ("https://tiki.vn/thuc-pham-chuc-nang/c2322", "Thực phẩm chức năng"),
-        # ("", ""),
-        ("https://tiki.vn/ngoai-troi-san-vuon/c2223", "Ngoài trời, sân vườn"),
+        # ("https://tiki.vn/ngoai-troi-san-vuon/c2223", "Ngoài trời, sân vườn"),
         # ("https://tiki.vn/bo-ga-ra-drap/c23346", "Bộ ga, ra, drap"),
         # ("https://tiki.vn/ruot-goi-ruot-chan/c6724", "Gối, ruột gối, vỏ gối"),
-        # ("https://tiki.vn/noi-that/c215", "Nội thất"),
+        # ("", ""),
+        # ("https://tiki.vn/noi-that/c2150", "Nội thất"),
         # ("", ""),
     ]
     # headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 '
