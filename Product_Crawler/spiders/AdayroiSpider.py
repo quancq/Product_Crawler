@@ -135,7 +135,7 @@ class AdayroiSpider(ProductSpider):
         # ("https://www.adayroi.com/ao-nu-c3", "Thời trang nữ"),
         # ("https://www.adayroi.com/dung-cu-thiet-bi-y-te-c250", "Dụng cụ, Thiết bị y tế"),
         # ("https://www.adayroi.com/thuc-pham-chuc-nang-c332560097188122", "Thực phẩm chức năng"),
-        ("https://www.adayroi.com/ngoai-troi-san-vuon-c1006", "Ngoài trời, sân vườn"),
+        # ("https://www.adayroi.com/ngoai-troi-san-vuon-c1006", "Ngoài trời, sân vườn"),
         # ("", ""),
         # ("", ""),
     ]
