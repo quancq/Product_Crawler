@@ -43,7 +43,7 @@ class TikiSpider(ProductSpider):
         # ("https://tiki.vn/bo-ga-ra-drap/c23346", "Bộ ga, ra, drap"),
         # ("https://tiki.vn/ruot-goi-ruot-chan/c6724", "Gối, ruột gối, vỏ gối"),
         # ("", ""),
-        # ("https://tiki.vn/noi-that/c2150", "Nội thất"),
+        ("https://tiki.vn/noi-that/c2150", "Nội thất"),
         # ("", ""),
     ]
     # headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 '
