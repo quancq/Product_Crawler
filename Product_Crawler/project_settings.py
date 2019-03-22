@@ -2,9 +2,9 @@ CRAWL_LIMIT = {
     "Yes24": 2,
     "Lazada": 3,
     "Mediamart": -1,
-    "Sendo": 10,
+    "Sendo": 5,
     "Adayroi": -1,
-    "Tiki": 15,
+    "Tiki": 5,
     "default_crawl_limit": None
 }
 
