@@ -4,7 +4,7 @@ CRAWL_LIMIT = {
     "Mediamart": -1,
     "Sendo": 5,
     "Adayroi": -1,
-    "Tiki": 5,
+    "Tiki": 10,
     "default_crawl_limit": None
 }
 
