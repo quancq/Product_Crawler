@@ -51,9 +51,9 @@ class TikiSpider(ProductSpider):
         ("https://tiki.vn/trang-phuc-nam/c8335", "Trang phục nam"),
         ("https://tiki.vn/giay-nam/c1686", "Giày dép nam"),
         ("https://tiki.vn/phu-kien-thoi-trang-nam/c950", "Phụ kiện thời trang nam"),
-        #("https://tiki.vn/trang-phuc-nu/c8349", "Trang phục nữ"),
-        #("https://tiki.vn/giay-dep-nu/c1703", "Giày dép nữ"),
-        #("https://tiki.vn/phu-kien-nu/c975", "Phụ kiện thời trang nữ"),
+        ("https://tiki.vn/trang-phuc-nu/c8349", "Trang phục nữ"),
+        ("https://tiki.vn/giay-dep-nu/c1703", "Giày dép nữ"),
+        ("https://tiki.vn/phu-kien-nu/c975", "Phụ kiện thời trang nữ"),
         # ("", ""),
         # ("", ""),
         # ("", ""),
@@ -67,7 +67,7 @@ class TikiSpider(ProductSpider):
         super().__init__(name=self.name)
 
     def start_requests(self):
-        page_idx = 100
+        page_idx = 1
         for category_url, category in self.url_category_list:
             meta = {
                 "category": category,
